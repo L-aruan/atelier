@@ -1,8 +1,12 @@
 'use client';
 import Link from 'next/link';
+import { Button } from '@mediabox/ui-kit';
 import { SearchBar } from './SearchBar';
+import { useAuth } from '@/lib/auth-context';
 
 export function Navbar() {
+  const { user, logout, isLoading } = useAuth();
+
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,6 +27,21 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             <SearchBar />
+            {!isLoading &&
+              (user ? (
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-gray-700 max-w-[140px] truncate" title={user.email}>
+                    {user.name || user.email}
+                  </span>
+                  <Button type="button" variant="ghost" size="sm" onClick={logout}>
+                    退出
+                  </Button>
+                </div>
+              ) : (
+                <Link href="/login" className="text-sm font-medium text-blue-600 hover:text-blue-800">
+                  登录
+                </Link>
+              ))}
             <Link
               href="/settings/keys"
               className="text-gray-400 hover:text-gray-600 transition-colors"
