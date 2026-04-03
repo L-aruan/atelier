@@ -1,0 +1,55 @@
+---
+description: Atelier 项目全局开发规范
+alwaysApply: true
+---
+
+# Atelier 项目规范
+
+## Git 操作
+
+- **禁止未经用户确认就 `git push`**。代码可以 commit，但 push 前必须征得用户同意
+- Commit message 使用 Conventional Commits 格式：`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`
+- 不要修改 git config（user.name / user.email 等）
+
+## 项目结构
+
+- 本项目为 pnpm monorepo，包管理器为 pnpm 9+
+- Web 平台入口：`packages/platform/web`（Next.js 14 App Router）
+- 开发服务器端口：3200
+- 新工具只能创建在 `packages/tools/` 下，每个工具独立为一个 npm 包
+
+## 包命名
+
+- 所有包使用 `@atelier/` scope，例如 `@atelier/web`、`@atelier/image-crop`
+- 工具包命名：`@atelier/<tool-id>`，tool-id 与 manifest.json 中的 id 一致
+
+## 代码风格
+
+- 全链路 TypeScript，严格模式
+- React 组件使用函数式组件 + Hooks
+- 样式使用 Tailwind CSS，不写自定义 CSS 文件（globals.css 除外）
+- 状态管理使用 Zustand，避免 prop drilling
+- API 使用 tRPC，保持端到端类型安全
+- `catch` 块使用 `unknown` 类型，不用 `any`
+
+## 工具开发
+
+每个工具必须包含：
+1. `manifest.json` — 声明工具能力、运行环境、输入输出
+2. `src/processor.ts` — 处理逻辑，导出 `process()` 函数
+3. `src/<Name>Tool.tsx` — React UI 组件
+4. `src/index.ts` — 统一导出
+5. `package.json` — 依赖声明，name 使用 `@atelier/<id>`
+
+新工具完成后需在 `packages/platform/web/src/lib/register-tools.ts` 中注册。
+
+## 构建与验证
+
+- 修改代码后用 `pnpm --filter @atelier/web exec next build` 验证构建
+- Tailwind 扫描路径已配置 `packages/tools/` 和 `packages/engines/`，新增包目录时确认 `tailwind.config.ts` 的 content 包含对应路径
+
+## 文件与数据
+
+- MVP 阶段本地数据存储使用 localStorage / IndexedDB
+- localStorage key 统一使用 `atelier:` 前缀（如 `atelier:token`、`atelier:api-keys`）
+- 数据库使用 PostgreSQL + Prisma ORM

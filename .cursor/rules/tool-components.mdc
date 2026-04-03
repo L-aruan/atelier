@@ -1,0 +1,29 @@
+---
+description: 工具 UI 组件开发规范
+globs: packages/tools/*/src/*.tsx
+alwaysApply: false
+---
+
+# 工具组件规范
+
+## Props 接口
+
+工具组件接收以下标准 props（由 ToolPageShell 注入）：
+
+```typescript
+interface ToolComponentProps {
+  files: File[]
+  onResult: (results: FileOutput[]) => void
+  // AI 工具额外 props
+  apiKey?: string
+  callApi?: (formData: FormData) => Promise<Response>
+  onNavigateToKeys?: () => void
+}
+```
+
+## 用户体验
+
+- 上传文件后工具应立即可用，避免额外操作才能激活按钮
+- 参数变更后实时更新预览
+- 处理按钮在无法操作时 disabled 并显示原因文字
+- 错误信息使用中文，面向终端用户

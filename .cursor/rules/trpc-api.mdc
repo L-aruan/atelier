@@ -1,0 +1,28 @@
+---
+description: tRPC API 路由开发规范
+globs: packages/platform/web/src/server/**/*.ts
+alwaysApply: false
+---
+
+# tRPC API 规范
+
+## 路由组织
+
+- 路由文件放在 `src/server/routers/` 下
+- 根路由在 `_app.ts`，按领域拆分子路由（`ai.ts`、`user.ts` 等）
+- 新增路由后必须在 `_app.ts` 中注册
+
+## 输入验证
+
+- 所有 mutation/query 的输入使用 Zod schema 验证
+- Zod v4+ 使用 `z.email()` 而非 `z.string().email()`
+
+## 错误处理
+
+```typescript
+// 使用 TRPCError 抛出业务错误
+throw new TRPCError({
+  code: 'BAD_REQUEST',
+  message: '用户友好的中文错误信息',
+});
+```
