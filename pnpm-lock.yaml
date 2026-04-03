@@ -48,6 +48,9 @@ importers:
       '@mediabox/engine-image':
         specifier: workspace:*
         version: link:../../engines/engine-image
+      '@mediabox/tool-image-crop':
+        specifier: workspace:*
+        version: link:../../tools/image-crop
       '@mediabox/types':
         specifier: workspace:*
         version: link:../../shared/types

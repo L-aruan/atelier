@@ -7,14 +7,15 @@ export interface CropToolOptions extends ToolOptions {
   quality?: number;
 }
 
-export async function processCrop(input: FileInput, options: CropToolOptions): Promise<FileOutput> {
+export async function processCrop(input: FileInput, options: ToolOptions): Promise<FileOutput> {
+  const o = options as CropToolOptions;
   const blob = await cropImage(input.file, {
-    region: options.region,
-    outputType: options.outputFormat || input.type,
-    quality: options.quality ?? 0.92,
+    region: o.region,
+    outputType: o.outputFormat || input.type,
+    quality: o.quality ?? 0.92,
   });
 
-  const ext = (options.outputFormat || input.type).split('/')[1] || 'png';
+  const ext = (o.outputFormat || input.type).split('/')[1] || 'png';
   const baseName = input.name.replace(/\.[^.]+$/, '');
   const name = `${baseName}_cropped.${ext}`;
 
