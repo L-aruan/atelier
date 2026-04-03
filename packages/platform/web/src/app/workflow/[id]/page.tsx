@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { WorkflowEditor } from '@/components/WorkflowEditor';
+import { WorkflowRunner } from '@/components/WorkflowRunner';
 import { loadWorkflow, saveWorkflow } from '@/lib/workflow-store';
 import type { Workflow } from '@/lib/workflow-types';
 
@@ -25,6 +26,8 @@ export default function WorkflowEditPage({ params }: { params: { id: string } })
   const router = useRouter();
   const [workflow, setWorkflow] = useState<Workflow | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mode, setMode] = useState<'edit' | 'run'>('edit');
+  const [runKey, setRunKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,7 +65,14 @@ export default function WorkflowEditPage({ params }: { params: { id: string } })
     }
   }, [workflow, router]);
 
-  const handleExecute = useCallback(() => {}, []);
+  const handleExecute = useCallback(() => {
+    setRunKey((k) => k + 1);
+    setMode('run');
+  }, []);
+
+  const handleRunnerBack = useCallback(() => {
+    setMode('edit');
+  }, []);
 
   if (loading) {
     return <div className="text-center py-20 text-gray-500">加载中…</div>;
@@ -81,15 +91,29 @@ export default function WorkflowEditPage({ params }: { params: { id: string } })
 
   return (
     <div className="space-y-4">
-      <Link href="/workflow" className="text-sm text-gray-500 hover:text-gray-700">
-        ← 返回
-      </Link>
-      <WorkflowEditor
-        workflow={workflow}
-        onChange={setWorkflow}
-        onExecute={handleExecute}
-        onSave={handleSave}
-      />
+      <div className="flex items-center gap-4">
+        <Link href="/workflow" className="text-sm text-gray-500 hover:text-gray-700">
+          ← 返回
+        </Link>
+        {mode === 'run' && <span className="text-sm text-blue-600 font-medium">执行工作流</span>}
+      </div>
+
+      {mode === 'edit' ? (
+        <WorkflowEditor
+          workflow={workflow}
+          onChange={setWorkflow}
+          onExecute={handleExecute}
+          onSave={handleSave}
+        />
+      ) : (
+        <WorkflowRunner
+          key={runKey}
+          workflow={workflow}
+          files={[]}
+          onComplete={() => {}}
+          onBack={handleRunnerBack}
+        />
+      )}
     </div>
   );
 }

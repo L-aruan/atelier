@@ -15,7 +15,9 @@ export function Navbar() {
               <Link href="/" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
                 工具库
               </Link>
-              <span className="text-gray-400 text-sm cursor-not-allowed">工作流</span>
+              <Link href="/workflow" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
+                工作流
+              </Link>
               <span className="text-gray-400 text-sm cursor-not-allowed">我的文件</span>
             </nav>
           </div>
