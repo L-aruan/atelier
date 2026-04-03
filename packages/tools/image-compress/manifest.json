@@ -1,0 +1,13 @@
+{
+  "id": "image-compress",
+  "name": "图片压缩",
+  "category": "image",
+  "description": "智能压缩图片，保持画质的同时大幅减小文件体积",
+  "icon": "🗜️",
+  "version": "1.0.0",
+  "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
+  "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
+  "output": { "formats": ["jpeg", "png", "webp"] },
+  "engine": "@mediabox/engine-image",
+  "component": "./ImageCompressTool.tsx"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@mediabox/tool-image-compress",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@mediabox/types": "workspace:*",
+    "@mediabox/engine-image": "workspace:*",
+    "@mediabox/ui-kit": "workspace:*",
+    "react": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "typescript": "^5.4.0"
+  }
+}
