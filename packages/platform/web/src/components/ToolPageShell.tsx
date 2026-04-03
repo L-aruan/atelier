@@ -2,14 +2,14 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { recordToolUse } from '@/lib/pinned-store';
 import { useRouter } from 'next/navigation';
-import { FileDropZone } from '@mediabox/ui-kit';
+import { FileDropZone } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { filesToFileInputs, formatFileSize } from '@/lib/file-utils';
 import { runPreview, runBatch, retryFailed } from '@/lib/batch-engine';
 import { getKeyForProvider } from '@/lib/key-store';
 import { trpc } from '@/lib/trpc-client';
 import type { BatchResult, BatchPhase } from '@/lib/batch-engine';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 import { BatchPreview } from './BatchPreview';
 import { BatchProgress } from './BatchProgress';
 import { BatchReview } from './BatchReview';

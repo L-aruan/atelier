@@ -1,4 +1,4 @@
-import type { FileInput } from '@mediabox/types';
+import type { FileInput } from '@atelier/types';
 
 export function filesToFileInputs(files: File[]): FileInput[] {
   return files.map((file) => ({

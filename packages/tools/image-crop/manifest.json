@@ -8,6 +8,6 @@
   "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
   "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
   "output": { "formats": ["jpeg", "png", "webp"] },
-  "engine": "@mediabox/engine-image",
+  "engine": "@atelier/engine-image",
   "component": "./ImageCropTool.tsx"
 }

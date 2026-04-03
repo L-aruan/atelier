@@ -1,4 +1,4 @@
-# MediaBox Phase 1 — 基础架构搭建 实施计划
+# Atelier Phase 1 — 基础架构搭建 实施计划
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -17,7 +17,7 @@
 ## File Structure
 
 ```
-mediabox/
+atelier/
 ├── package.json                          # Root workspace config
 ├── pnpm-workspace.yaml                   # pnpm workspace packages 声明
 ├── turbo.json                            # Turborepo pipeline 配置
@@ -35,7 +35,7 @@ mediabox/
 │   │           ├── index.ts              # Re-exports
 │   │           ├── manifest.ts           # ToolManifest 类型
 │   │           ├── file.ts               # FileInput / FileOutput 类型
-│   │           └── tool.ts               # MediaBoxTool 接口、ToolProps
+│   │           └── tool.ts               # AtelierTool 接口、ToolProps
 │   │
 │   ├── ui-kit/                           # 通用 UI 组件库
 │   │   ├── package.json
@@ -64,7 +64,7 @@ mediabox/
 │   │       ├── manifest.json
 │   │       ├── tsconfig.json
 │   │       └── src/
-│   │           ├── index.ts              # 导出 MediaBoxTool
+│   │           ├── index.ts              # 导出 AtelierTool
 │   │           ├── ImageCropTool.tsx      # 裁剪 UI 组件（react-image-crop）
 │   │           └── processor.ts          # 调用 engine-image/crop
 │   │
@@ -114,7 +114,7 @@ mediabox/
 
 ```json
 {
-  "name": "mediabox",
+  "name": "atelier",
   "private": true,
   "scripts": {
     "dev": "turbo dev",
@@ -262,7 +262,7 @@ git commit -m "chore: initialize monorepo with pnpm + turborepo"
 `packages/shared/types/package.json`:
 ```json
 {
-  "name": "@mediabox/types",
+  "name": "@atelier/types",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -376,7 +376,7 @@ export interface ToolProps {
   outputs: FileOutput[];
 }
 
-export interface MediaBoxTool {
+export interface AtelierTool {
   manifest: ToolManifest;
   Component: ComponentType<ToolProps>;
   process: (input: FileInput, options: ToolOptions) => Promise<FileOutput>;
@@ -401,7 +401,7 @@ Expected: 编译成功，生成 dist 目录
 
 ```bash
 git add -A
-git commit -m "feat: add shared types package with ToolManifest, FileInput/Output, MediaBoxTool"
+git commit -m "feat: add shared types package with ToolManifest, FileInput/Output, AtelierTool"
 ```
 
 ---
@@ -422,7 +422,7 @@ git commit -m "feat: add shared types package with ToolManifest, FileInput/Outpu
 `packages/ui-kit/package.json`:
 ```json
 {
-  "name": "@mediabox/ui-kit",
+  "name": "@atelier/ui-kit",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -433,7 +433,7 @@ git commit -m "feat: add shared types package with ToolManifest, FileInput/Outpu
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
+    "@atelier/types": "workspace:*",
     "react": "^18.3.0",
     "clsx": "^2.1.0"
   },
@@ -600,7 +600,7 @@ export function FileDropZone({
 `packages/ui-kit/src/ToolCard.tsx`:
 ```tsx
 import { clsx } from 'clsx';
-import type { ToolManifest } from '@mediabox/types';
+import type { ToolManifest } from '@atelier/types';
 
 interface ToolCardProps {
   manifest: ToolManifest;
@@ -700,7 +700,7 @@ git commit -m "feat: add ui-kit package with Button, FileDropZone, ToolCard"
 `packages/engines/engine-image/package.json`:
 ```json
 {
-  "name": "@mediabox/engine-image",
+  "name": "@atelier/engine-image",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -713,7 +713,7 @@ git commit -m "feat: add ui-kit package with Button, FileDropZone, ToolCard"
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
+    "@atelier/types": "workspace:*",
     "browser-image-compression": "^2.0.0"
   },
   "devDependencies": {
@@ -899,7 +899,7 @@ git commit -m "feat: add engine-image package with crop, compress, format capabi
 `packages/platform/web/package.json`:
 ```json
 {
-  "name": "@mediabox/web",
+  "name": "@atelier/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -910,9 +910,9 @@ git commit -m "feat: add engine-image package with crop, compress, format capabi
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
-    "@mediabox/ui-kit": "workspace:*",
-    "@mediabox/engine-image": "workspace:*",
+    "@atelier/types": "workspace:*",
+    "@atelier/ui-kit": "workspace:*",
+    "@atelier/engine-image": "workspace:*",
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
@@ -937,7 +937,7 @@ git commit -m "feat: add engine-image package with crop, compress, format capabi
 ```js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['@mediabox/ui-kit', '@mediabox/types', '@mediabox/engine-image'],
+  transpilePackages: ['@atelier/ui-kit', '@atelier/types', '@atelier/engine-image'],
 };
 
 export default nextConfig;
@@ -1009,7 +1009,7 @@ import { Navbar } from '@/components/Navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'MediaBox — 媒体工具聚合平台',
+  title: 'Atelier — 媒体工具聚合平台',
   description: '一站式媒体工具平台，图片裁剪、压缩、AI 抠图、视频转码，批量处理，工作流自动化',
 };
 
@@ -1069,7 +1069,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-blue-600 font-bold text-lg">
-              📦 MediaBox
+              📦 Atelier
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/" className="text-gray-700 hover:text-gray-900 text-sm font-medium">
@@ -1117,24 +1117,24 @@ git commit -m "feat: add Next.js platform shell with Navbar and Tailwind"
 
 `packages/platform/web/src/lib/tool-registry.ts`:
 ```typescript
-import type { ToolManifest, MediaBoxTool } from '@mediabox/types';
+import type { ToolManifest, AtelierTool } from '@atelier/types';
 
 class ToolRegistry {
-  private tools = new Map<string, MediaBoxTool>();
+  private tools = new Map<string, AtelierTool>();
 
-  register(tool: MediaBoxTool) {
+  register(tool: AtelierTool) {
     this.tools.set(tool.manifest.id, tool);
   }
 
-  get(id: string): MediaBoxTool | undefined {
+  get(id: string): AtelierTool | undefined {
     return this.tools.get(id);
   }
 
-  getAll(): MediaBoxTool[] {
+  getAll(): AtelierTool[] {
     return Array.from(this.tools.values());
   }
 
-  getByCategory(category: string): MediaBoxTool[] {
+  getByCategory(category: string): AtelierTool[] {
     if (category === 'all') return this.getAll();
     return this.getAll().filter((t) => t.manifest.category === category);
   }
@@ -1160,7 +1160,7 @@ export const toolRegistry = new ToolRegistry();
 
 `packages/platform/web/src/lib/file-utils.ts`:
 ```typescript
-import type { FileInput } from '@mediabox/types';
+import type { FileInput } from '@atelier/types';
 
 export function filesToFileInputs(files: File[]): FileInput[] {
   return files.map((file) => ({
@@ -1194,10 +1194,10 @@ export function getFileCategory(mimeType: string): string {
 'use client';
 
 import { useCallback, useState } from 'react';
-import { FileDropZone } from '@mediabox/ui-kit';
+import { FileDropZone } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { getFileCategory } from '@/lib/file-utils';
-import type { ToolManifest } from '@mediabox/types';
+import type { ToolManifest } from '@atelier/types';
 import { useRouter } from 'next/navigation';
 
 export function FileDropHero() {
@@ -1268,7 +1268,7 @@ export function FileDropHero() {
 'use client';
 
 import { clsx } from 'clsx';
-import { categoryLabels } from '@mediabox/ui-kit';
+import { categoryLabels } from '@atelier/ui-kit';
 
 interface CategoryTabsProps {
   selected: string;
@@ -1306,8 +1306,8 @@ export function CategoryTabs({ selected, onChange }: CategoryTabsProps) {
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ToolCard } from '@mediabox/ui-kit';
-import type { ToolManifest } from '@mediabox/types';
+import { ToolCard } from '@atelier/ui-kit';
+import type { ToolManifest } from '@atelier/types';
 
 interface ToolGridProps {
   tools: ToolManifest[];
@@ -1401,7 +1401,7 @@ git commit -m "feat: implement home page with FileDropHero, CategoryTabs, ToolGr
 `packages/tools/image-crop/package.json`:
 ```json
 {
-  "name": "@mediabox/tool-image-crop",
+  "name": "@atelier/tool-image-crop",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -1412,9 +1412,9 @@ git commit -m "feat: implement home page with FileDropHero, CategoryTabs, ToolGr
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
-    "@mediabox/engine-image": "workspace:*",
-    "@mediabox/ui-kit": "workspace:*",
+    "@atelier/types": "workspace:*",
+    "@atelier/engine-image": "workspace:*",
+    "@atelier/ui-kit": "workspace:*",
     "react": "^18.3.0",
     "react-image-crop": "^11.0.0"
   },
@@ -1448,7 +1448,7 @@ git commit -m "feat: implement home page with FileDropHero, CategoryTabs, ToolGr
   "output": {
     "formats": ["jpeg", "png", "webp"]
   },
-  "engine": "@mediabox/engine-image",
+  "engine": "@atelier/engine-image",
   "component": "./ImageCropTool.tsx"
 }
 ```
@@ -1470,8 +1470,8 @@ git commit -m "feat: implement home page with FileDropHero, CategoryTabs, ToolGr
 
 `packages/tools/image-crop/src/processor.ts`:
 ```typescript
-import { cropImage, type CropRegion } from '@mediabox/engine-image';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import { cropImage, type CropRegion } from '@atelier/engine-image';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface CropToolOptions extends ToolOptions {
   region: CropRegion;
@@ -1507,8 +1507,8 @@ export async function processCrop(input: FileInput, options: CropToolOptions): P
 import { useState, useCallback, useRef } from 'react';
 import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
 import type { CropToolOptions } from './processor';
 
 const ASPECT_RATIOS = [
@@ -1635,17 +1635,17 @@ export function ImageCropTool({ files, onProcess, onDownload, processing, output
 }
 ```
 
-- [ ] **Step 4: 创建 index.ts — 导出 MediaBoxTool**
+- [ ] **Step 4: 创建 index.ts — 导出 AtelierTool**
 
 `packages/tools/image-crop/src/index.ts`:
 ```typescript
-import type { MediaBoxTool } from '@mediabox/types';
+import type { AtelierTool } from '@atelier/types';
 import manifest from '../manifest.json';
 import { ImageCropTool } from './ImageCropTool';
 import { processCrop } from './processor';
 
-export const imageCropTool: MediaBoxTool = {
-  manifest: manifest as MediaBoxTool['manifest'],
+export const imageCropTool: AtelierTool = {
+  manifest: manifest as AtelierTool['manifest'],
   Component: ImageCropTool,
   process: processCrop,
 };
@@ -1679,7 +1679,7 @@ git commit -m "feat: add image-crop tool with react-image-crop UI"
 `packages/platform/web/src/lib/register-tools.ts`:
 ```typescript
 import { toolRegistry } from './tool-registry';
-import { imageCropTool } from '@mediabox/tool-image-crop';
+import { imageCropTool } from '@atelier/tool-image-crop';
 
 export function registerAllTools() {
   toolRegistry.register(imageCropTool);
@@ -1718,10 +1718,10 @@ export function AppInit() {
 'use client';
 
 import { useState, useCallback } from 'react';
-import { FileDropZone } from '@mediabox/ui-kit';
+import { FileDropZone } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { filesToFileInputs, formatFileSize } from '@/lib/file-utils';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 interface ToolPageShellProps {
   toolId: string;
@@ -1840,7 +1840,7 @@ export default function ToolPage({ params }: { params: { id: string } }) {
 
 修改 `packages/platform/web/package.json`，在 dependencies 中添加：
 ```json
-"@mediabox/tool-image-crop": "workspace:*"
+"@atelier/tool-image-crop": "workspace:*"
 ```
 
 Run: `pnpm install`
@@ -1877,7 +1877,7 @@ git commit -m "feat: integrate image-crop tool into platform with dynamic routin
 `packages/platform/web/src/stores/app-store.ts`:
 ```typescript
 import { create } from 'zustand';
-import type { FileInput } from '@mediabox/types';
+import type { FileInput } from '@atelier/types';
 
 interface AppState {
   pendingFiles: FileInput[];

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import type { Workflow, WorkflowStep } from '@/lib/workflow-types';
 import { toolRegistry } from '@/lib/tool-registry';
-import type { ImageFormat } from '@mediabox/engine-image';
+import type { ImageFormat } from '@atelier/engine-image';
 import { WorkflowStepCard } from './WorkflowStepCard';
 import { WorkflowToolPicker } from './WorkflowToolPicker';
 

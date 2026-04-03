@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
 import type { RemoveBgToolOptions } from './processor';
 
 interface AiRemoveBgToolProps extends ToolProps {

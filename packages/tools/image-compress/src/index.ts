@@ -1,10 +1,10 @@
-import type { MediaBoxTool } from '@mediabox/types';
+import type { AtelierTool } from '@atelier/types';
 import manifest from '../manifest.json';
 import { ImageCompressTool } from './ImageCompressTool';
 import { processCompress } from './processor';
 
-export const imageCompressTool: MediaBoxTool = {
-  manifest: manifest as MediaBoxTool['manifest'],
+export const imageCompressTool: AtelierTool = {
+  manifest: manifest as AtelierTool['manifest'],
   Component: ImageCompressTool,
   process: processCompress,
 };

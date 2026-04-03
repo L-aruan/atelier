@@ -1,21 +1,21 @@
-import type { ToolManifest, MediaBoxTool } from '@mediabox/types';
+import type { ToolManifest, AtelierTool } from '@atelier/types';
 
 class ToolRegistry {
-  private tools = new Map<string, MediaBoxTool>();
+  private tools = new Map<string, AtelierTool>();
 
-  register(tool: MediaBoxTool) {
+  register(tool: AtelierTool) {
     this.tools.set(tool.manifest.id, tool);
   }
 
-  get(id: string): MediaBoxTool | undefined {
+  get(id: string): AtelierTool | undefined {
     return this.tools.get(id);
   }
 
-  getAll(): MediaBoxTool[] {
+  getAll(): AtelierTool[] {
     return Array.from(this.tools.values());
   }
 
-  getByCategory(category: string): MediaBoxTool[] {
+  getByCategory(category: string): AtelierTool[] {
     if (category === 'all') return this.getAll();
     return this.getAll().filter((t) => t.manifest.category === category);
   }

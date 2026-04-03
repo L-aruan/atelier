@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'mediabox:api-keys';
+const STORAGE_KEY = 'atelier:api-keys';
 
 export interface ApiKeyEntry {
   id: string;

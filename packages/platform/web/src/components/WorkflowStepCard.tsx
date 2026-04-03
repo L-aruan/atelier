@@ -2,7 +2,7 @@
 
 import type { WorkflowStep } from '@/lib/workflow-types';
 import { toolRegistry } from '@/lib/tool-registry';
-import type { ImageFormat } from '@mediabox/engine-image';
+import type { ImageFormat } from '@atelier/engine-image';
 
 interface WorkflowStepCardProps {
   step: WorkflowStep;

@@ -1,5 +1,5 @@
 {
-  "name": "@mediabox/tool-ai-remove-bg",
+  "name": "@atelier/tool-ai-remove-bg",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,9 +10,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
-    "@mediabox/engine-ai": "workspace:*",
-    "@mediabox/ui-kit": "workspace:*",
+    "@atelier/types": "workspace:*",
+    "@atelier/engine-ai": "workspace:*",
+    "@atelier/ui-kit": "workspace:*",
     "react": "^18.3.0"
   },
   "devDependencies": {

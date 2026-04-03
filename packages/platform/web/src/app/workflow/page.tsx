@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import { EmptyState } from '@/components/EmptyState';
 import { ListSkeleton } from '@/components/LoadingSkeleton';
 import { WORKFLOW_TEMPLATES, createFromTemplate } from '@/lib/workflow-templates';

@@ -1,4 +1,4 @@
-# MediaBox Phase 5 — 用户系统 + UX 打磨 实施计划
+# Atelier Phase 5 — 用户系统 + UX 打磨 实施计划
 
 **Goal:** 用户注册/登录上线，钉选工具 + 最近使用，UX 全面打磨，生产构建就绪。
 
@@ -65,8 +65,8 @@ packages/platform/web/
 - [ ] **Step 1: 安装 Prisma**
 
 ```bash
-pnpm --filter @mediabox/web add prisma @prisma/client bcryptjs jose
-pnpm --filter @mediabox/web add -D @types/bcryptjs
+pnpm --filter @atelier/web add prisma @prisma/client bcryptjs jose
+pnpm --filter @atelier/web add -D @types/bcryptjs
 ```
 
 - [ ] **Step 2: 创建 schema.prisma**
@@ -158,7 +158,7 @@ feat: add Prisma schema with User, PinnedTool, RecentTool models
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'mediabox-dev-secret');
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'atelier-dev-secret');
 
 export async function hashPassword(password: string): Promise<string> { ... }
 export async function verifyPassword(password: string, hash: string): Promise<boolean> { ... }
@@ -294,7 +294,7 @@ feat: add loading states, error toasts, empty states, and responsive layout
 - [ ] **Step 1: 生成 Prisma Client（不需要实际数据库连接）**
 
 ```bash
-pnpm --filter @mediabox/web exec prisma generate
+pnpm --filter @atelier/web exec prisma generate
 ```
 
 - [ ] **Step 2: pnpm build 验证**

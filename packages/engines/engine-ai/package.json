@@ -1,5 +1,5 @@
 {
-  "name": "@mediabox/engine-ai",
+  "name": "@atelier/engine-ai",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,7 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*"
+    "@atelier/types": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.4.0"

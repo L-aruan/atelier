@@ -1,5 +1,5 @@
-import { compressImage } from '@mediabox/engine-image';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import { compressImage } from '@atelier/engine-image';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface CompressToolOptions extends ToolOptions {
   maxSizeMB?: number;

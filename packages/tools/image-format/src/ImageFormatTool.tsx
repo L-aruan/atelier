@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
-import type { ImageFormat } from '@mediabox/engine-image';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
+import type { ImageFormat } from '@atelier/engine-image';
 import type { FormatToolOptions } from './processor';
 
 const FORMATS: { label: string; value: ImageFormat }[] = [

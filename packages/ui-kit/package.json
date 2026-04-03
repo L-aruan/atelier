@@ -1,5 +1,5 @@
 {
-  "name": "@mediabox/ui-kit",
+  "name": "@atelier/ui-kit",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,7 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
+    "@atelier/types": "workspace:*",
     "react": "^18.3.0",
     "clsx": "^2.1.0"
   },

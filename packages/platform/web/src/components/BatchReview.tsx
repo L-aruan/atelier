@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import type { BatchResult } from '@/lib/batch-engine';
 import { CompareSlider } from './CompareSlider';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import { downloadAsZip, downloadSingle } from '@/lib/download-utils';
 
 interface BatchReviewProps {

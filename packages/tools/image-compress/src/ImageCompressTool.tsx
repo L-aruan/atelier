@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
 import type { CompressToolOptions } from './processor';
 
 export function ImageCompressTool({ files, onProcess, onDownload, processing, outputs }: ToolProps) {

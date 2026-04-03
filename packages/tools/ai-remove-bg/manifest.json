@@ -19,6 +19,6 @@
   "output": {
     "formats": ["png"]
   },
-  "engine": "@mediabox/engine-ai",
+  "engine": "@atelier/engine-ai",
   "component": "./AiRemoveBgTool.tsx"
 }

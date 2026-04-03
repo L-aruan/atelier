@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { ToolCard } from '@mediabox/ui-kit';
-import type { ToolManifest } from '@mediabox/types';
+import { ToolCard } from '@atelier/ui-kit';
+import type { ToolManifest } from '@atelier/types';
 import {
   getPinnedTools,
   togglePinTool,

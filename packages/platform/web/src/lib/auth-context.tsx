@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('mediabox:token');
-    const savedUser = localStorage.getItem('mediabox:user');
+    const savedToken = localStorage.getItem('atelier:token');
+    const savedUser = localStorage.getItem('atelier:user');
     if (savedToken && savedUser) {
       try {
         setToken(savedToken);
@@ -45,15 +45,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback((newToken: string, newUser: User) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('mediabox:token', newToken);
-    localStorage.setItem('mediabox:user', JSON.stringify(newUser));
+    localStorage.setItem('atelier:token', newToken);
+    localStorage.setItem('atelier:user', JSON.stringify(newUser));
   }, []);
 
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('mediabox:token');
-    localStorage.removeItem('mediabox:user');
+    localStorage.removeItem('atelier:token');
+    localStorage.removeItem('atelier:user');
   }, []);
 
   return (

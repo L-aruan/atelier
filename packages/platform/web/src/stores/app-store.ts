@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { FileInput } from '@mediabox/types';
+import type { FileInput } from '@atelier/types';
 import type { BatchResult, BatchPhase } from '@/lib/batch-engine';
 
 interface BatchProgress {

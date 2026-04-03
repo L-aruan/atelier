@@ -1,4 +1,4 @@
-import type { FileInput, FileOutput, ToolOptions, MediaBoxTool } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions, AtelierTool } from '@atelier/types';
 
 export interface BatchResult {
   input: FileInput;
@@ -10,7 +10,7 @@ export interface BatchResult {
 export type BatchPhase = 'idle' | 'preview' | 'executing' | 'review';
 
 export async function runPreview(
-  tool: MediaBoxTool,
+  tool: AtelierTool,
   files: FileInput[],
   options: ToolOptions,
   count = 3,
@@ -31,7 +31,7 @@ export async function runPreview(
 }
 
 export async function runBatch(
-  tool: MediaBoxTool,
+  tool: AtelierTool,
   files: FileInput[],
   options: ToolOptions,
   onProgress: (completed: number, total: number, currentFile: string) => void,
@@ -55,7 +55,7 @@ export async function runBatch(
 }
 
 export async function retryFailed(
-  tool: MediaBoxTool,
+  tool: AtelierTool,
   failedResults: BatchResult[],
   options: ToolOptions,
   onProgress: (completed: number, total: number, currentFile: string) => void,

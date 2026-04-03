@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import type { FileOutput } from '@mediabox/types';
+import type { FileOutput } from '@atelier/types';
 
 export function downloadSingle(output: FileOutput) {
   const a = document.createElement('a');
@@ -8,7 +8,7 @@ export function downloadSingle(output: FileOutput) {
   a.click();
 }
 
-export async function downloadAsZip(outputs: FileOutput[], zipName = 'mediabox-output.zip') {
+export async function downloadAsZip(outputs: FileOutput[], zipName = 'atelier-output.zip') {
   const zip = new JSZip();
   for (const output of outputs) {
     zip.file(output.name, output.blob);

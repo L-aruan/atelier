@@ -1,5 +1,5 @@
 {
-  "name": "@mediabox/engine-image",
+  "name": "@atelier/engine-image",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,7 +10,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@mediabox/types": "workspace:*",
+    "@atelier/types": "workspace:*",
     "browser-image-compression": "^2.0.0"
   },
   "devDependencies": {

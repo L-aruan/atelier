@@ -1,4 +1,4 @@
-# MediaBox Phase 3 — AI 抠图 + Key 管理 实施计划
+# Atelier Phase 3 — AI 抠图 + Key 管理 实施计划
 
 **Goal:** 第一个 AI 工具上线（AI 抠图），本地 Key 管理可用，tRPC 基础设施搭建完成。
 
@@ -81,7 +81,7 @@ packages/
 - [ ] **Step 1: 安装依赖**
 
 ```bash
-pnpm --filter @mediabox/web add @trpc/server @trpc/client @trpc/react-query @trpc/next @tanstack/react-query zod superjson
+pnpm --filter @atelier/web add @trpc/server @trpc/client @trpc/react-query @trpc/next @tanstack/react-query zod superjson
 ```
 
 - [ ] **Step 2: 创建 server/trpc.ts — tRPC 初始化**
@@ -182,7 +182,7 @@ feat: add tRPC infrastructure with server/client setup
 - [ ] **Step 1: 实现 key-store.ts — localStorage Key 管理**
 
 ```typescript
-const STORAGE_KEY = 'mediabox:api-keys';
+const STORAGE_KEY = 'atelier:api-keys';
 
 export interface ApiKeyEntry {
   id: string;
@@ -258,12 +258,12 @@ feat: add AI gateway with remove.bg proxy and localStorage key store
 
 ```json
 {
-  "name": "@mediabox/engine-ai",
+  "name": "@atelier/engine-ai",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
   "types": "./src/index.ts",
-  "dependencies": { "@mediabox/types": "workspace:*" },
+  "dependencies": { "@atelier/types": "workspace:*" },
   "devDependencies": { "typescript": "^5.4.0" }
 }
 ```
@@ -326,7 +326,7 @@ manifest.json:
   "runtime": { "client": false, "server": true, "offline": false, "downloadable": false },
   "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "25MB", "batch": true },
   "output": { "formats": ["png"] },
-  "engine": "@mediabox/engine-ai",
+  "engine": "@atelier/engine-ai",
   "component": "./AiRemoveBgTool.tsx"
 }
 ```
@@ -334,7 +334,7 @@ manifest.json:
 - [ ] **Step 2: 实现 processor.ts**
 
 ```typescript
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface RemoveBgToolOptions extends ToolOptions {
   apiKey?: string;
@@ -376,8 +376,8 @@ UI 特殊点：
 
 ```tsx
 import { useState, useCallback } from 'react';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
 import { getKeyForProvider } from '@/lib/key-store';
 import { trpc } from '@/lib/trpc-client';
 import type { RemoveBgToolOptions } from './processor';

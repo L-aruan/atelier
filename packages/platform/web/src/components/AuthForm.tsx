@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import { trpc } from '@/lib/trpc-client';
 import { useAuth } from '@/lib/auth-context';
 

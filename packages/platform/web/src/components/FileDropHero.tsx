@@ -1,9 +1,9 @@
 'use client';
 import { useCallback, useState } from 'react';
-import { FileDropZone } from '@mediabox/ui-kit';
+import { FileDropZone } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { getFileCategory } from '@/lib/file-utils';
-import type { ToolManifest } from '@mediabox/types';
+import type { ToolManifest } from '@atelier/types';
 import { useRouter } from 'next/navigation';
 
 export function FileDropHero() {

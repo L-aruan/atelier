@@ -1,7 +1,7 @@
-const PINNED_KEY = 'mediabox:pinned-tools';
-const RECENT_KEY = 'mediabox:recent-tools';
+const PINNED_KEY = 'atelier:pinned-tools';
+const RECENT_KEY = 'atelier:recent-tools';
 
-export const LOCAL_STORAGE_CHANGED = 'mediabox-local-storage';
+export const LOCAL_STORAGE_CHANGED = 'atelier-local-storage';
 
 function emitLocalStorageChanged() {
   if (typeof window !== 'undefined') {

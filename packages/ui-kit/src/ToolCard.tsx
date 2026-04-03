@@ -1,5 +1,5 @@
 import { clsx } from 'clsx';
-import type { ToolManifest } from '@mediabox/types';
+import type { ToolManifest } from '@atelier/types';
 
 interface ToolCardProps {
   manifest: ToolManifest;

@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 
 interface WorkflowToolPickerProps {

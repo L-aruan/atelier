@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { Button, FileDropZone } from '@mediabox/ui-kit';
+import { Button, FileDropZone } from '@atelier/ui-kit';
 import type { Workflow, WorkflowExecution } from '@/lib/workflow-types';
-import type { FileInput, FileOutput } from '@mediabox/types';
+import type { FileInput, FileOutput } from '@atelier/types';
 import { executeWorkflow } from '@/lib/workflow-engine';
 import { filesToFileInputs } from '@/lib/file-utils';
 import { downloadAsZip } from '@/lib/download-utils';

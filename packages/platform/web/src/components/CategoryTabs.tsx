@@ -1,6 +1,6 @@
 'use client';
 import { clsx } from 'clsx';
-import { categoryLabels } from '@mediabox/ui-kit';
+import { categoryLabels } from '@atelier/ui-kit';
 
 interface CategoryTabsProps {
   selected: string;

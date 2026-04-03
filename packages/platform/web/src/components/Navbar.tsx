@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 import { SearchBar } from './SearchBar';
 import { useAuth } from '@/lib/auth-context';
 
@@ -13,7 +13,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-blue-600 font-bold text-lg">
-              📦 MediaBox
+              📦 Atelier
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link href="/" className="text-gray-700 hover:text-gray-900 text-sm font-medium">

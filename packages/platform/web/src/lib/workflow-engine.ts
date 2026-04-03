@@ -1,5 +1,5 @@
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
-import type { CropRegion } from '@mediabox/engine-image';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
+import type { CropRegion } from '@atelier/engine-image';
 import type { Workflow, WorkflowExecution, StepResult, WorkflowStep } from './workflow-types';
 import { toolRegistry } from './tool-registry';
 

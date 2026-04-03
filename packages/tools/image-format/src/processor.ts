@@ -1,5 +1,5 @@
-import { convertFormat, type ImageFormat } from '@mediabox/engine-image';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import { convertFormat, type ImageFormat } from '@atelier/engine-image';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface FormatToolOptions extends ToolOptions {
   targetFormat: ImageFormat;

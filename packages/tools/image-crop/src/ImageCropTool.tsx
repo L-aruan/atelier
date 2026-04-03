@@ -1,8 +1,8 @@
 import { useState, useCallback, useRef } from 'react';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { Button } from '@mediabox/ui-kit';
-import type { ToolProps } from '@mediabox/types';
+import { Button } from '@atelier/ui-kit';
+import type { ToolProps } from '@atelier/types';
 import type { CropToolOptions } from './processor';
 
 const ASPECT_RATIOS = [

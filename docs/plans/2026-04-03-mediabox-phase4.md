@@ -1,4 +1,4 @@
-# MediaBox Phase 4 — 工作流引擎 实施计划
+# Atelier Phase 4 — 工作流引擎 实施计划
 
 **Goal:** 简单模式工作流可用（步骤列表编辑器），预设模板可选，工作流可保存/加载（IndexedDB）。
 
@@ -153,7 +153,7 @@ feat: add workflow editor UI with step list and tool picker
 - [ ] **Step 1: 实现 workflow-engine.ts**
 
 ```typescript
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 import type { Workflow, WorkflowExecution, StepResult } from './workflow-types';
 import { toolRegistry } from './tool-registry';
 
@@ -203,7 +203,7 @@ feat: add workflow execution engine with step-by-step processing
 - [ ] **Step 1: 安装 idb-keyval**
 
 ```bash
-pnpm --filter @mediabox/web add idb-keyval
+pnpm --filter @atelier/web add idb-keyval
 ```
 
 - [ ] **Step 2: 实现 workflow-store.ts**

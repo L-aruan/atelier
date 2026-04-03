@@ -1,7 +1,7 @@
 'use client';
 import type { BatchResult } from '@/lib/batch-engine';
 import { CompareSlider } from './CompareSlider';
-import { Button } from '@mediabox/ui-kit';
+import { Button } from '@atelier/ui-kit';
 
 interface BatchPreviewProps {
   results: BatchResult[];

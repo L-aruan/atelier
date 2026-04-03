@@ -1,5 +1,5 @@
 {
-  "name": "@mediabox/web",
+  "name": "@atelier/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,14 +10,14 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@mediabox/engine-ai": "workspace:*",
-    "@mediabox/engine-image": "workspace:*",
-    "@mediabox/tool-ai-remove-bg": "workspace:*",
-    "@mediabox/tool-image-compress": "workspace:*",
-    "@mediabox/tool-image-crop": "workspace:*",
-    "@mediabox/tool-image-format": "workspace:*",
-    "@mediabox/types": "workspace:*",
-    "@mediabox/ui-kit": "workspace:*",
+    "@atelier/engine-ai": "workspace:*",
+    "@atelier/engine-image": "workspace:*",
+    "@atelier/tool-ai-remove-bg": "workspace:*",
+    "@atelier/tool-image-compress": "workspace:*",
+    "@atelier/tool-image-crop": "workspace:*",
+    "@atelier/tool-image-format": "workspace:*",
+    "@atelier/types": "workspace:*",
+    "@atelier/ui-kit": "workspace:*",
     "@prisma/client": "^6.19.3",
     "@tanstack/react-query": "^5.96.1",
     "@trpc/client": "^11.13.0",

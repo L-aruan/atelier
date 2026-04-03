@@ -9,7 +9,7 @@ import { Toaster } from '@/components/Toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'MediaBox — 媒体工具聚合平台',
+  title: 'Atelier — 媒体工具聚合平台',
   description: '一站式媒体工具平台，图片裁剪、压缩、AI 抠图、视频转码，批量处理，工作流自动化',
 };
 

@@ -1,4 +1,4 @@
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface RemoveBgToolOptions extends ToolOptions {
   apiKey?: string;

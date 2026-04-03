@@ -1,5 +1,5 @@
-import { cropImage, type CropRegion } from '@mediabox/engine-image';
-import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
+import { cropImage, type CropRegion } from '@atelier/engine-image';
+import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 
 export interface CropToolOptions extends ToolOptions {
   region: CropRegion;

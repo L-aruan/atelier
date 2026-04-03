@@ -1,11 +1,11 @@
-import type { MediaBoxTool } from '@mediabox/types';
+import type { AtelierTool } from '@atelier/types';
 import manifest from '../manifest.json';
 import { AiRemoveBgTool } from './AiRemoveBgTool';
 import { processRemoveBg } from './processor';
 
-export const aiRemoveBgTool: MediaBoxTool = {
-  manifest: manifest as MediaBoxTool['manifest'],
-  Component: AiRemoveBgTool as MediaBoxTool['Component'],
+export const aiRemoveBgTool: AtelierTool = {
+  manifest: manifest as AtelierTool['manifest'],
+  Component: AiRemoveBgTool as AtelierTool['Component'],
   process: processRemoveBg,
 };
 

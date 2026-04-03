@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'mediabox-dev-secret');
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'atelier-dev-secret');
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);

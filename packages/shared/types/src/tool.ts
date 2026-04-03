@@ -14,7 +14,7 @@ export interface ToolProps {
   outputs: FileOutput[];
 }
 
-export interface MediaBoxTool {
+export interface AtelierTool {
   manifest: ToolManifest;
   Component: ComponentType<ToolProps>;
   process: (input: FileInput, options: ToolOptions) => Promise<FileOutput>;
