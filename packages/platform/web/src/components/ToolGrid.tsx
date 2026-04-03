@@ -9,12 +9,18 @@ import {
   togglePinTool,
   LOCAL_STORAGE_CHANGED,
 } from '@/lib/pinned-store';
+import { EmptyState } from '@/components/EmptyState';
+import { ToolCardSkeleton } from '@/components/LoadingSkeleton';
 
 interface ToolGridProps {
   tools: ToolManifest[];
+  /** True while grid is not ready to show (e.g. post-hydration). */
+  isLoading?: boolean;
+  /** When tools are empty because of search, copy differs from empty category. */
+  searchActive?: boolean;
 }
 
-export function ToolGrid({ tools }: ToolGridProps) {
+export function ToolGrid({ tools, isLoading, searchActive }: ToolGridProps) {
   const router = useRouter();
   const [pinnedSet, setPinnedSet] = useState<Set<string>>(() => new Set());
 
@@ -28,12 +34,32 @@ export function ToolGrid({ tools }: ToolGridProps) {
     return () => window.removeEventListener(LOCAL_STORAGE_CHANGED, syncPins);
   }, [syncPins]);
 
-  if (tools.length === 0) {
+  if (isLoading) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        <div className="text-4xl mb-3">🔍</div>
-        <p>该分类下暂无工具</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {Array.from({ length: 10 }, (_, i) => (
+          <ToolCardSkeleton key={i} />
+        ))}
       </div>
+    );
+  }
+
+  if (tools.length === 0) {
+    if (searchActive) {
+      return (
+        <EmptyState
+          icon="🔍"
+          title="未找到相关工具"
+          description="试试其他关键词，或切换分类浏览全部工具。"
+        />
+      );
+    }
+    return (
+      <EmptyState
+        icon="📂"
+        title="该分类下暂无工具"
+        description="请选择其他分类查看可用工具。"
+      />
     );
   }
 

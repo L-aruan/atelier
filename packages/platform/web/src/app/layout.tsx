@@ -4,6 +4,7 @@ import './globals.css';
 import { AppInit } from '@/components/AppInit';
 import { Navbar } from '@/components/Navbar';
 import { Providers } from '@/components/Providers';
+import { Toaster } from '@/components/Toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <AppInit />
           <Navbar />
+          <Toaster />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {children}
           </main>

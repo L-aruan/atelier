@@ -1,5 +1,5 @@
 'use client';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { FileDropHero } from '@/components/FileDropHero';
 import { PinnedTools } from '@/components/PinnedTools';
 import { RecentTools } from '@/components/RecentTools';
@@ -10,6 +10,11 @@ import { useAppStore } from '@/stores/app-store';
 
 export default function HomePage() {
   const { selectedCategory, setSelectedCategory, searchQuery } = useAppStore();
+  const [gridReady, setGridReady] = useState(false);
+
+  useEffect(() => {
+    setGridReady(true);
+  }, []);
 
   const tools = useMemo(() => {
     let result = toolRegistry.getByCategory(selectedCategory).map((t) => t.manifest);
@@ -29,7 +34,11 @@ export default function HomePage() {
       <RecentTools />
       <section className="space-y-4">
         <CategoryTabs selected={selectedCategory} onChange={setSelectedCategory} />
-        <ToolGrid tools={tools} />
+        <ToolGrid
+          tools={tools}
+          isLoading={!gridReady}
+          searchActive={Boolean(searchQuery.trim())}
+        />
       </section>
     </div>
   );

@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@mediabox/ui-kit';
+import { EmptyState } from '@/components/EmptyState';
+import { ListSkeleton } from '@/components/LoadingSkeleton';
 import { WORKFLOW_TEMPLATES, createFromTemplate } from '@/lib/workflow-templates';
 import { listWorkflows, deleteWorkflow, saveWorkflow } from '@/lib/workflow-store';
 import type { Workflow } from '@/lib/workflow-types';
@@ -44,7 +46,13 @@ export default function WorkflowListPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-20 text-gray-500">加载中…</div>;
+    return (
+      <div className="space-y-10">
+        <div className="h-8 w-48 animate-pulse rounded bg-gray-200" />
+        <div className="h-4 w-96 max-w-full animate-pulse rounded bg-gray-100" />
+        <ListSkeleton rows={5} />
+      </div>
+    );
   }
 
   return (
@@ -81,9 +89,15 @@ export default function WorkflowListPage() {
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">我的工作流</h2>
         {saved.length === 0 ? (
-          <p className="text-gray-500 text-sm py-8 text-center border border-dashed border-gray-200 rounded-xl">
-            暂无保存的工作流，可新建或从模板创建
-          </p>
+          <EmptyState
+            icon="🗂️"
+            title="暂无保存的工作流"
+            description="新建一个工作流，或从上方预设模板快速开始。"
+            action={{
+              label: '新建工作流',
+              onClick: () => router.push('/workflow/new'),
+            }}
+          />
         ) : (
           <ul className="space-y-3">
             {saved.map((w) => (
