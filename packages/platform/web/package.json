@@ -10,7 +10,9 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
+    "@mediabox/engine-ai": "workspace:*",
     "@mediabox/engine-image": "workspace:*",
+    "@mediabox/tool-ai-remove-bg": "workspace:*",
     "@mediabox/tool-image-compress": "workspace:*",
     "@mediabox/tool-image-crop": "workspace:*",
     "@mediabox/tool-image-format": "workspace:*",

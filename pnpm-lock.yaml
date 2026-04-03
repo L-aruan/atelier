@@ -30,6 +30,16 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  packages/engines/engine-ai:
+    dependencies:
+      '@mediabox/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+    devDependencies:
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   packages/engines/engine-image:
     dependencies:
       '@mediabox/types':
@@ -45,9 +55,15 @@ importers:
 
   packages/platform/web:
     dependencies:
+      '@mediabox/engine-ai':
+        specifier: workspace:*
+        version: link:../../engines/engine-ai
       '@mediabox/engine-image':
         specifier: workspace:*
         version: link:../../engines/engine-image
+      '@mediabox/tool-ai-remove-bg':
+        specifier: workspace:*
+        version: link:../../tools/ai-remove-bg
       '@mediabox/tool-image-compress':
         specifier: workspace:*
         version: link:../../tools/image-compress
@@ -126,6 +142,28 @@ importers:
         version: 5.9.3
 
   packages/shared/types:
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
+  packages/tools/ai-remove-bg:
+    dependencies:
+      '@mediabox/engine-ai':
+        specifier: workspace:*
+        version: link:../../engines/engine-ai
+      '@mediabox/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+      '@mediabox/ui-kit':
+        specifier: workspace:*
+        version: link:../../ui-kit
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
     devDependencies:
       '@types/react':
         specifier: ^18.3.0

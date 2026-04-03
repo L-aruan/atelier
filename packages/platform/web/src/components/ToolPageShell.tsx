@@ -1,9 +1,12 @@
 'use client';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { FileDropZone } from '@mediabox/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { filesToFileInputs, formatFileSize } from '@/lib/file-utils';
 import { runPreview, runBatch, retryFailed } from '@/lib/batch-engine';
+import { getKeyForProvider } from '@/lib/key-store';
+import { trpc } from '@/lib/trpc-client';
 import type { BatchResult, BatchPhase } from '@/lib/batch-engine';
 import type { FileInput, FileOutput, ToolOptions } from '@mediabox/types';
 import { BatchPreview } from './BatchPreview';
@@ -16,9 +19,22 @@ interface ToolPageShellProps {
 
 export function ToolPageShell({ toolId }: ToolPageShellProps) {
   const tool = toolRegistry.get(toolId);
+  const router = useRouter();
   const [files, setFiles] = useState<FileInput[]>([]);
   const [outputs, setOutputs] = useState<FileOutput[]>([]);
   const [processing, setProcessing] = useState(false);
+
+  const removeBgMutation = trpc.ai.removeBg.useMutation();
+
+  const isAiTool = tool?.manifest.category === 'ai';
+  const aiApiKey = isAiTool ? getKeyForProvider('remove-bg') : null;
+
+  const aiCallApi = useMemo(() => {
+    if (!isAiTool) return undefined;
+    return async (imageBase64: string, apiKey?: string) => {
+      return removeBgMutation.mutateAsync({ imageBase64, apiKey });
+    };
+  }, [isAiTool, removeBgMutation]);
 
   const [batchPhase, setBatchPhase] = useState<BatchPhase>('idle');
   const [previewResults, setPreviewResults] = useState<BatchResult[]>([]);
@@ -187,6 +203,11 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
               onDownload={handleDownload}
               processing={processing}
               outputs={outputs}
+              {...(isAiTool && {
+                apiKey: aiApiKey,
+                callApi: aiCallApi,
+                onNavigateToKeys: () => router.push('/settings/keys'),
+              })}
             />
           )}
 

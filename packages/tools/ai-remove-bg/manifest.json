@@ -1,0 +1,24 @@
+{
+  "id": "ai-remove-bg",
+  "name": "AI 抠图",
+  "category": "ai",
+  "description": "AI 智能去除图片背景，一键生成透明 PNG",
+  "icon": "🪄",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": ["image/jpeg", "image/png", "image/webp"],
+    "maxSize": "25MB",
+    "batch": true
+  },
+  "output": {
+    "formats": ["png"]
+  },
+  "engine": "@mediabox/engine-ai",
+  "component": "./AiRemoveBgTool.tsx"
+}
