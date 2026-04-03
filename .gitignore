@@ -6,3 +6,9 @@ dist/
 .env*.local
 packages/platform/web/.env
 .superpowers/
+# Database
+dev.db
+*.db
+
+# Test Data
+test-data/
