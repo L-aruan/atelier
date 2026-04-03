@@ -21,6 +21,8 @@ export interface WorkflowExecution {
   currentStepIndex: number;
   totalSteps: number;
   stepResults: StepResult[];
+  /** 当前正在处理的文件名（执行引擎进度展示用） */
+  currentFileName?: string | null;
 }
 
 export interface StepResult {
