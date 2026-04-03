@@ -1,6 +1,8 @@
 'use client';
 import { useMemo } from 'react';
 import { FileDropHero } from '@/components/FileDropHero';
+import { PinnedTools } from '@/components/PinnedTools';
+import { RecentTools } from '@/components/RecentTools';
 import { CategoryTabs } from '@/components/CategoryTabs';
 import { ToolGrid } from '@/components/ToolGrid';
 import { toolRegistry } from '@/lib/tool-registry';
@@ -23,6 +25,8 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <FileDropHero />
+      <PinnedTools />
+      <RecentTools />
       <section className="space-y-4">
         <CategoryTabs selected={selectedCategory} onChange={setSelectedCategory} />
         <ToolGrid tools={tools} />

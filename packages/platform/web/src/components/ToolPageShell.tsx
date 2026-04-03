@@ -1,5 +1,6 @@
 'use client';
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { recordToolUse } from '@/lib/pinned-store';
 import { useRouter } from 'next/navigation';
 import { FileDropZone } from '@mediabox/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
@@ -20,6 +21,11 @@ interface ToolPageShellProps {
 export function ToolPageShell({ toolId }: ToolPageShellProps) {
   const tool = toolRegistry.get(toolId);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!toolRegistry.get(toolId)) return;
+    recordToolUse(toolId);
+  }, [toolId]);
   const [files, setFiles] = useState<FileInput[]>([]);
   const [outputs, setOutputs] = useState<FileOutput[]>([]);
   const [processing, setProcessing] = useState(false);
