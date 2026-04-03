@@ -3,6 +3,8 @@ const config: Config = {
   content: [
     './src/**/*.{ts,tsx}',
     '../../ui-kit/src/**/*.{ts,tsx}',
+    '../../tools/*/src/**/*.{ts,tsx}',
+    '../../engines/*/src/**/*.{ts,tsx}',
   ],
   theme: { extend: {} },
   plugins: [],
