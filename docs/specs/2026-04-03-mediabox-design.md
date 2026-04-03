@@ -1,4 +1,4 @@
-# Atelier — 媒体工具聚合平台设计文档
+# MediaBox — 媒体工具聚合平台设计文档
 
 > 日期：2026-04-03
 > 状态：Reviewed
@@ -8,7 +8,7 @@
 
 ### 1.1 产品定位
 
-Atelier 是一个面向电商运营、自媒体创作者、中小企业设计团队的**通用媒体工具聚合平台**。核心理念是「工具导航 + 封装层」——聚合互联网上已有的优秀工具能力，提供统一的中文化体验和增值功能（工作流串联、批量处理、文件管理）。
+MediaBox 是一个面向电商运营、自媒体创作者、中小企业设计团队的**通用媒体工具聚合平台**。核心理念是「工具导航 + 封装层」——聚合互联网上已有的优秀工具能力，提供统一的中文化体验和增值功能（工作流串联、批量处理、文件管理）。
 
 ### 1.2 核心价值（优先级排序）
 
@@ -125,7 +125,7 @@ Atelier 是一个面向电商运营、自媒体创作者、中小企业设计团
   "output": {
     "formats": ["jpeg", "png", "webp"]
   },
-  "engine": "@atelier/engine-image",
+  "engine": "@mediabox/engine-image",
   "component": "./ImageCropTool.tsx"
 }
 ```
@@ -143,7 +143,7 @@ Atelier 是一个面向电商运营、自媒体创作者、中小企业设计团
 每个工具实现统一接口：
 
 ```typescript
-interface AtelierTool {
+interface MediaBoxTool {
   manifest: ToolManifest
   Component: React.FC<ToolProps>
   process(input: FileInput, options: ToolOptions): Promise<FileOutput>
@@ -155,7 +155,7 @@ interface AtelierTool {
 ### 3.3 项目结构（Monorepo）
 
 ```
-atelier/
+mediabox/
 ├── packages/
 │   ├── tools/                  # 工具包
 │   │   ├── image-crop/
@@ -196,10 +196,10 @@ atelier/
 
 后续新增工具的标准流程：
 
-1. **CLI 脚手架**：`atelier create-tool <name> --category <cat>` 生成标准骨架
-2. **开发模式**：`atelier dev` 启动本地开发服务器，热更新实时预览
+1. **CLI 脚手架**：`mediabox create-tool <name> --category <cat>` 生成标准骨架
+2. **开发模式**：`mediabox dev` 启动本地开发服务器，热更新实时预览
 3. **Manifest 校验**：自动检查 manifest 合法性和输入输出兼容性
-4. **发布注册**：`atelier publish` 注册到平台工具目录，支持版本管理
+4. **发布注册**：`mediabox publish` 注册到平台工具目录，支持版本管理
 
 ## 4. 工作流引擎
 

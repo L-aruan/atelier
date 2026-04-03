@@ -7,7 +7,7 @@ interface CategoryTabsProps {
   onChange: (category: string) => void;
 }
 
-const categories = ['all', 'image', 'video', 'design', 'audio', 'document', 'ai'] as const;
+const categories = ['all', 'image', 'video', 'design', 'audio', 'document', 'ai', 'utility'] as const;
 
 export function CategoryTabs({ selected, onChange }: CategoryTabsProps) {
   return (

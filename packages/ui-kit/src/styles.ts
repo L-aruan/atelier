@@ -5,6 +5,7 @@ export const categoryColors: Record<string, string> = {
   audio: 'bg-green-100 text-green-700',
   document: 'bg-yellow-100 text-yellow-700',
   ai: 'bg-indigo-100 text-indigo-700',
+  utility: 'bg-teal-100 text-teal-700',
 };
 
 export const categoryLabels: Record<string, string> = {
@@ -14,4 +15,5 @@ export const categoryLabels: Record<string, string> = {
   audio: '🔊 音频',
   document: '📄 文档',
   ai: '🤖 AI',
+  utility: '🧰 实用工具',
 };

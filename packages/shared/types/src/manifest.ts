@@ -1,4 +1,4 @@
-export type ToolCategory = 'image' | 'video' | 'design' | 'audio' | 'document' | 'ai';
+export type ToolCategory = 'image' | 'video' | 'design' | 'audio' | 'document' | 'ai' | 'utility';
 
 export interface ToolRuntime {
   client: boolean;
@@ -29,4 +29,5 @@ export interface ToolManifest {
   output: ToolOutput;
   engine: string;
   component: string;
+  customLayout?: boolean;
 }

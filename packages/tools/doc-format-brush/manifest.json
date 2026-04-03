@@ -1,0 +1,25 @@
+{
+  "id": "doc-format-brush",
+  "name": "文档格式刷",
+  "category": "document",
+  "description": "将模板 Word 文档的格式应用到目标文档，一键统一格式",
+  "icon": "🖌️",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx"],
+    "maxSize": "50MB",
+    "batch": false
+  },
+  "output": {
+    "formats": ["docx"]
+  },
+  "engine": "@atelier/tool-doc-format-brush",
+  "component": "./DocFormatBrushTool.tsx",
+  "customLayout": true
+}

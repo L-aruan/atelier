@@ -9,6 +9,8 @@ const nextConfig = {
     '@atelier/tool-image-crop',
     '@atelier/tool-image-format',
     '@atelier/tool-ai-remove-bg',
+    '@atelier/tool-doc-format-brush',
+    '@atelier/tool-file-organizer',
   ],
 };
 export default nextConfig;

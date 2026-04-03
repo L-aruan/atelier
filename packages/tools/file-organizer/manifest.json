@@ -1,0 +1,25 @@
+{
+  "id": "file-organizer",
+  "name": "文件整理",
+  "category": "utility",
+  "description": "按文件名或类型自动归类整理，打包下载",
+  "icon": "📂",
+  "version": "1.0.0",
+  "runtime": {
+    "client": true,
+    "server": false,
+    "offline": true,
+    "downloadable": true
+  },
+  "input": {
+    "accept": ["*/*"],
+    "maxSize": "200MB",
+    "batch": true
+  },
+  "output": {
+    "formats": ["zip"]
+  },
+  "engine": "@atelier/tool-file-organizer",
+  "component": "./FileOrganizerTool.tsx",
+  "customLayout": true
+}
