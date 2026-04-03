@@ -30,6 +30,8 @@ export function AiRemoveBgTool({
   const hasKey = !!apiKey;
   const hasOutput = outputs.length > 0;
 
+  const canProcess = !!callApi && (hasKey || !useOwnKey);
+
   const handleRemoveBg = useCallback(async () => {
     if (!callApi) return;
     const key = useOwnKey ? apiKey || undefined : undefined;
@@ -39,24 +41,28 @@ export function AiRemoveBgTool({
 
   return (
     <div className="space-y-6">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+      <div className={`rounded-lg p-4 text-sm border ${hasKey ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-blue-800">
-              {hasKey ? '✓ 已配置 remove.bg API Key' : '需要 remove.bg API Key 才能使用'}
+            <p className={hasKey ? 'text-green-800' : 'text-amber-800 font-medium'}>
+              {hasKey ? '✓ 已配置 remove.bg API Key' : '⚠ 需要先添加 remove.bg API Key'}
             </p>
-            <p className="text-blue-600 text-xs mt-1">
+            <p className={`text-xs mt-1 ${hasKey ? 'text-green-600' : 'text-amber-600'}`}>
               {hasKey
                 ? '使用你的 Key 可获得更好的配额'
-                : '免费 Key 每月可处理 50 张图'}
+                : '前往设置添加 Key 后即可使用，免费 Key 每月可处理 50 张图'}
             </p>
           </div>
           {onNavigateToKeys && (
             <button
               onClick={onNavigateToKeys}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              className={`text-sm font-medium whitespace-nowrap ml-4 px-3 py-1.5 rounded-lg transition-colors ${
+                hasKey
+                  ? 'text-green-600 hover:text-green-800'
+                  : 'bg-amber-600 text-white hover:bg-amber-700'
+              }`}
             >
-              {hasKey ? '管理 Key' : '去添加 →'}
+              {hasKey ? '管理 Key' : '去添加 Key →'}
             </button>
           )}
         </div>
@@ -115,10 +121,10 @@ export function AiRemoveBgTool({
       <div className="flex gap-3">
         <Button
           onClick={handleRemoveBg}
-          disabled={processing || files.length === 0 || !callApi}
+          disabled={processing || files.length === 0 || !canProcess}
           className="flex-1"
         >
-          {processing ? '处理中...' : `AI 抠图 ${files.length} 张图片`}
+          {processing ? '处理中...' : !canProcess ? '请先添加 API Key' : `AI 抠图 ${files.length} 张图片`}
         </Button>
         {hasOutput && (
           <Button variant="secondary" onClick={() => onDownload(outputs)}>
