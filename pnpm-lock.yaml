@@ -48,9 +48,15 @@ importers:
       '@mediabox/engine-image':
         specifier: workspace:*
         version: link:../../engines/engine-image
+      '@mediabox/tool-image-compress':
+        specifier: workspace:*
+        version: link:../../tools/image-compress
       '@mediabox/tool-image-crop':
         specifier: workspace:*
         version: link:../../tools/image-crop
+      '@mediabox/tool-image-format':
+        specifier: workspace:*
+        version: link:../../tools/image-format
       '@mediabox/types':
         specifier: workspace:*
         version: link:../../shared/types
@@ -104,6 +110,28 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
+  packages/tools/image-compress:
+    dependencies:
+      '@mediabox/engine-image':
+        specifier: workspace:*
+        version: link:../../engines/engine-image
+      '@mediabox/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+      '@mediabox/ui-kit':
+        specifier: workspace:*
+        version: link:../../ui-kit
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
   packages/tools/image-crop:
     dependencies:
       '@mediabox/engine-image':
@@ -121,6 +149,28 @@ importers:
       react-image-crop:
         specifier: ^11.0.0
         version: 11.0.10(react@18.3.1)
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
+  packages/tools/image-format:
+    dependencies:
+      '@mediabox/engine-image':
+        specifier: workspace:*
+        version: link:../../engines/engine-image
+      '@mediabox/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+      '@mediabox/ui-kit':
+        specifier: workspace:*
+        version: link:../../ui-kit
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
     devDependencies:
       '@types/react':
         specifier: ^18.3.0

@@ -1,0 +1,13 @@
+{
+  "id": "image-format",
+  "name": "格式转换",
+  "category": "image",
+  "description": "在 JPEG、PNG、WebP 格式之间自由转换",
+  "icon": "🔄",
+  "version": "1.0.0",
+  "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
+  "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
+  "output": { "formats": ["jpeg", "png", "webp"] },
+  "engine": "@mediabox/engine-image",
+  "component": "./ImageFormatTool.tsx"
+}
