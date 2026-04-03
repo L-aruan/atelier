@@ -1,0 +1,6 @@
+packages:
+  - "packages/shared/*"
+  - "packages/engines/*"
+  - "packages/tools/*"
+  - "packages/platform/*"
+  - "packages/ui-kit"
