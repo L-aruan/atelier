@@ -28,14 +28,15 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 ### 1. 文件整理工具
 自动按照文件名或文件类型对散乱的文件进行归类，并打包下载：
 
-> 💡 **提示**：[将你录制的文件整理动图命名为 `file-organizer-demo.gif` 并放置在 `docs/assets/` 目录下即可在此处显示]
-![文件整理演示](./docs/assets/file-organizer-demo.gif)
+<div style="display: flex; flex-direction: column; gap: 10px;">
+  <img src="./docs/assets/file-organizer-2-uploaded.png" alt="上传散乱文件" width="800"/>
+  <img src="./docs/assets/file-organizer-3-preview.png" alt="预览整理方案" width="800"/>
+</div>
 
 ### 2. 文档格式刷
 一键将目标 Word 文档的页面设置、字体、段落格式、页眉页脚统一为模板文档的样式：
 
-> 💡 **提示**：[将你录制的格式刷动图命名为 `doc-format-brush-demo.gif` 并放置在 `docs/assets/` 目录下即可在此处显示]
-![文档格式刷演示](./docs/assets/doc-format-brush-demo.gif)
+<img src="./docs/assets/doc-format-brush-1-preview.png" alt="模板与目标样式对比" width="800"/>
 
 ## 技术栈
 
