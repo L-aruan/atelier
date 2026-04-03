@@ -1,0 +1,13 @@
+{
+  "id": "image-crop",
+  "name": "图片裁剪",
+  "category": "image",
+  "description": "自由裁剪、按比例裁剪、批量裁剪到指定尺寸",
+  "icon": "✂️",
+  "version": "1.0.0",
+  "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
+  "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
+  "output": { "formats": ["jpeg", "png", "webp"] },
+  "engine": "@mediabox/engine-image",
+  "component": "./ImageCropTool.tsx"
+}

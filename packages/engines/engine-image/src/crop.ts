@@ -1,4 +1,4 @@
-mport { loadImage, canvasToBlob, fileToObjectURL } from './utils';
+import { loadImage, canvasToBlob, fileToObjectURL } from './utils';
 
 export interface CropRegion {
   x: number;
