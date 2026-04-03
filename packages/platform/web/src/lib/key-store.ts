@@ -10,6 +10,7 @@ export interface ApiKeyEntry {
 
 export const AI_PROVIDERS = [
   { id: 'remove-bg', name: 'remove.bg', description: 'AI 抠图' },
+  { id: 'openrouter', name: 'OpenRouter', description: '统一 LLM 网关（300+ 模型）' },
   { id: 'openai', name: 'OpenAI', description: 'GPT / DALL-E' },
   { id: 'stability-ai', name: 'Stability AI', description: 'Stable Diffusion' },
 ] as const;
