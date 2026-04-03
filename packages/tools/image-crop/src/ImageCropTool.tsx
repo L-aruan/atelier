@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop';
+import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { Button } from '@mediabox/ui-kit';
 import type { ToolProps } from '@mediabox/types';
@@ -14,12 +14,26 @@ const ASPECT_RATIOS = [
   { label: '9:16', value: 9 / 16 },
 ];
 
+function createDefaultCrop(
+  aspect: number | undefined,
+  imgWidth: number,
+  imgHeight: number,
+): Crop {
+  const a = aspect ?? imgWidth / imgHeight;
+  return centerCrop(
+    makeAspectCrop({ unit: '%', width: 80 }, a, imgWidth, imgHeight),
+    imgWidth,
+    imgHeight,
+  );
+}
+
 export function ImageCropTool({ files, onProcess, onDownload, processing, outputs }: ToolProps) {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(undefined);
   const [currentIndex, setCurrentIndex] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
+  const [imgDimensions, setImgDimensions] = useState<{ w: number; h: number } | null>(null);
 
   const currentFile = files[currentIndex];
   const hasOutput = outputs.length > 0;
@@ -62,6 +76,19 @@ export function ImageCropTool({ files, onProcess, onDownload, processing, output
               src={currentFile.url}
               alt={currentFile.name}
               className="max-h-[500px] object-contain"
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                setImgDimensions({ w: img.width, h: img.height });
+                const defaultCrop = createDefaultCrop(aspect, img.width, img.height);
+                setCrop(defaultCrop);
+                setCompletedCrop({
+                  unit: 'px',
+                  x: (defaultCrop.x / 100) * img.width,
+                  y: (defaultCrop.y / 100) * img.height,
+                  width: (defaultCrop.width / 100) * img.width,
+                  height: (defaultCrop.height / 100) * img.height,
+                });
+              }}
             />
           </ReactCrop>
         </div>
@@ -96,7 +123,17 @@ export function ImageCropTool({ files, onProcess, onDownload, processing, output
                 type="button"
                 onClick={() => {
                   setAspect(r.value);
-                  setCrop(undefined);
+                  if (imgDimensions) {
+                    const newCrop = createDefaultCrop(r.value, imgDimensions.w, imgDimensions.h);
+                    setCrop(newCrop);
+                    setCompletedCrop({
+                      unit: 'px',
+                      x: (newCrop.x / 100) * imgDimensions.w,
+                      y: (newCrop.y / 100) * imgDimensions.h,
+                      width: (newCrop.width / 100) * imgDimensions.w,
+                      height: (newCrop.height / 100) * imgDimensions.h,
+                    });
+                  }
                 }}
                 className={`px-2 py-1.5 text-xs rounded-lg border transition-colors
                   ${
