@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pinnedTools  PinnedTool[]
+  recentTools  RecentTool[]
+}
+
+model PinnedTool {
+  id       String @id @default(cuid())
+  userId   String
+  toolId   String
+  order    Int    @default(0)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}
+
+model RecentTool {
+  id       String   @id @default(cuid())
+  userId   String
+  toolId   String
+  usedAt   DateTime @default(now())
+  count    Int      @default(1)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, toolId])
+}

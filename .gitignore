@@ -4,4 +4,5 @@ dist/
 .turbo/
 *.tsbuildinfo
 .env*.local
+packages/platform/web/.env
 .superpowers/
