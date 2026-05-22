@@ -16,10 +16,12 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 
 | 工具 | 类别 | 运行环境 | 说明 |
 |------|------|----------|------|
-| 图片裁剪 | 图片 | 浏览器 | 自由裁剪、按比例裁剪、批量裁剪 |
-| 图片压缩 | 图片 | 浏览器 | 质量控制、尺寸限制 |
+| 图片裁剪 | 图片 | 浏览器 | 自由裁剪、按比例裁剪、内置 15 个平台预设尺寸（淘宝/京东/抖音/小红书/B站等） |
+| 图片压缩 | 图片 | 浏览器 | 质量控制、体积限制、尺寸限制 |
 | 格式转换 | 图片 | 浏览器 | JPEG / PNG / WebP 互转 |
-| AI 去背景 | AI | 服务端 | 基于 remove.bg API |
+| 调整尺寸 | 图片 | 浏览器 | 指定像素/百分比缩放，适应/填充模式，批量处理 |
+| 批量水印 | 图片 | 浏览器 | 文字水印、图片水印、平铺防盗模式，支持位置/透明度/旋转 |
+| AI 去背景 | AI | 服务端 | 基于 remove.bg API，支持自有 Key 和平台 Key |
 | 文件整理 | 实用工具 | 浏览器 | 按文件名或类型自动归类整理，打包下载 |
 | 文档格式刷 | 文档 | 服务端 | 将模板 Word 文档的格式应用到目标文档，一键统一格式 |
 
@@ -45,7 +47,7 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 | 前端 | Next.js 14 (App Router) · React 18 · Tailwind CSS |
 | 状态管理 | Zustand |
 | API | tRPC (端到端类型安全) |
-| 数据库 | PostgreSQL · Prisma ORM |
+| 数据库 | SQLite (开发) / PostgreSQL (生产) · Prisma ORM |
 | 客户端处理 | Canvas API · browser-image-compression |
 | Monorepo | pnpm workspaces · Turborepo |
 
@@ -55,17 +57,20 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 atelier/
 ├── packages/
 │   ├── tools/                  # 工具插件
-│   │   ├── image-crop/         # 图片裁剪
+│   │   ├── image-crop/         # 图片裁剪（含平台预设尺寸）
 │   │   ├── image-compress/     # 图片压缩
 │   │   ├── image-format/       # 格式转换
-│   │   └── ai-remove-bg/       # AI 去背景
+│   │   ├── image-resize/       # 调整尺寸
+│   │   ├── image-watermark/    # 批量水印
+│   │   ├── ai-remove-bg/       # AI 去背景
+│   │   ├── doc-format-brush/   # 文档格式刷
+│   │   └── file-organizer/     # 文件整理
 │   ├── engines/                # 共享处理引擎
-│   │   ├── engine-image/       # 图片处理引擎
-│   │   └── engine-ai/          # AI API 网关客户端
+│   │   └── engine-image/       # 图片处理引擎（Canvas API）
 │   ├── platform/
-│   │   └── web/                # Next.js Web 平台
+│   │   └── web/                # Next.js Web 平台（tRPC + Prisma）
 │   ├── shared/
-│   │   └── types/              # 共享类型定义
+│   │   └── types/              # 共享类型定义 + 平台预设尺寸
 │   └── ui-kit/                 # 通用 UI 组件
 ├── docs/                       # 设计文档与里程碑计划
 ├── pnpm-workspace.yaml
@@ -90,12 +95,11 @@ cd atelier
 # 安装依赖
 pnpm install
 
-# 配置环境变量
+# 配置环境变量（默认 SQLite，开箱即用）
 cp packages/platform/web/.env.example packages/platform/web/.env
-# 编辑 .env 填入 DATABASE_URL 和 JWT_SECRET
 
-# 生成 Prisma 客户端
-pnpm --filter @atelier/web exec prisma generate
+# 初始化数据库 + 生成 Prisma 客户端
+pnpm --filter @atelier/web exec prisma db push
 
 # 启动开发服务器
 pnpm dev
