@@ -19,8 +19,8 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
 
   const handleProcess = useCallback(async () => {
     const options: ResizeToolOptions = {
-      width: mode === 'percentage' ? width : width,
-      height: mode === 'percentage' ? height : height,
+      width,
+      height,
       mode,
       keepRatio,
       backgroundColor: mode === 'fit' || mode === 'fill' ? backgroundColor : undefined,

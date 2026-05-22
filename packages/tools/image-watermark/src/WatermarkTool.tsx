@@ -29,13 +29,17 @@ export function WatermarkTool({ files, onProcess, onDownload, processing, output
   const [scale, setScale] = useState(0.15);
   const [watermarkImage, setWatermarkImage] = useState<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const watermarkUrlRef = useRef<string | null>(null);
 
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (watermarkUrlRef.current) URL.revokeObjectURL(watermarkUrlRef.current);
+    const url = URL.createObjectURL(file);
+    watermarkUrlRef.current = url;
     const img = new Image();
     img.onload = () => setWatermarkImage(img);
-    img.src = URL.createObjectURL(file);
+    img.src = url;
   }, []);
 
   const handleProcess = useCallback(async () => {
