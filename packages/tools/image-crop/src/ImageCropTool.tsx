@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import ReactCrop, { type Crop, type PixelCrop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { Button } from '@atelier/ui-kit';
+import { PLATFORM_PRESETS, PRESET_CATEGORIES } from '@atelier/types';
 import type { ToolProps } from '@atelier/types';
 import type { CropToolOptions } from './processor';
 
@@ -31,12 +32,34 @@ export function ImageCropTool({ files, onProcess, onDownload, processing, output
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspect, setAspect] = useState<number | undefined>(undefined);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
+  const [showPresets, setShowPresets] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
   const [imgDimensions, setImgDimensions] = useState<{ w: number; h: number } | null>(null);
 
   const currentFile = files[currentIndex];
   const hasOutput = outputs.length > 0;
+
+  const applyPreset = useCallback(
+    (preset: (typeof PLATFORM_PRESETS)[number]) => {
+      const ratio = preset.width / preset.height;
+      setAspect(ratio);
+      setSelectedPreset(preset.id);
+      if (imgDimensions) {
+        const newCrop = createDefaultCrop(ratio, imgDimensions.w, imgDimensions.h);
+        setCrop(newCrop);
+        setCompletedCrop({
+          unit: 'px',
+          x: (newCrop.x / 100) * imgDimensions.w,
+          y: (newCrop.y / 100) * imgDimensions.h,
+          width: (newCrop.width / 100) * imgDimensions.w,
+          height: (newCrop.height / 100) * imgDimensions.h,
+        });
+      }
+    },
+    [imgDimensions],
+  );
 
   const handleCrop = useCallback(async () => {
     if (!completedCrop || !imgRef.current) return;
@@ -146,6 +169,48 @@ export function ImageCropTool({ files, onProcess, onDownload, processing, output
               </button>
             ))}
           </div>
+        </div>
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setShowPresets(!showPresets)}
+            className="flex items-center justify-between w-full text-sm font-medium text-gray-700 mb-2"
+          >
+            <span>平台预设</span>
+            <span className="text-xs text-gray-400">{showPresets ? '收起' : '展开'}</span>
+          </button>
+          {showPresets && (
+            <div className="space-y-3 max-h-[300px] overflow-y-auto">
+              {PRESET_CATEGORIES.map((cat) => {
+                const presets = PLATFORM_PRESETS.filter((p) => p.category === cat.id);
+                return (
+                  <div key={cat.id}>
+                    <div className="text-xs text-gray-400 mb-1">{cat.label}</div>
+                    <div className="grid grid-cols-2 gap-1">
+                      {presets.map((preset) => (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => applyPreset(preset)}
+                          className={`px-2 py-1 text-xs rounded border transition-colors text-left ${
+                            selectedPreset === preset.id
+                              ? 'bg-blue-50 border-blue-400 text-blue-700'
+                              : 'border-gray-200 text-gray-600 hover:border-blue-300'
+                          }`}
+                        >
+                          <div className="font-medium truncate">{preset.label}</div>
+                          <div className="text-[10px] opacity-60">
+                            {preset.width}×{preset.height}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {completedCrop && (

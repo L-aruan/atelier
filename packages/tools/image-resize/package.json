@@ -1,5 +1,5 @@
 {
-  "name": "@atelier/engine-ai",
+  "name": "@atelier/tool-image-resize",
   "version": "0.1.0",
   "private": true,
   "main": "./src/index.ts",
@@ -10,9 +10,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@atelier/types": "workspace:*"
+    "@atelier/types": "workspace:*",
+    "@atelier/ui-kit": "workspace:*",
+    "react": "^18.3.0"
   },
   "devDependencies": {
+    "@types/react": "^18.3.0",
     "typescript": "^5.4.0"
   }
 }

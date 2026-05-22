@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { router, publicProcedure } from '../trpc';
+import { TRPCError } from '@trpc/server';
+import { router, protectedProcedure } from '../trpc';
 
 export const aiRouter = router({
-  removeBg: publicProcedure
+  removeBg: protectedProcedure
     .input(
       z.object({
         imageBase64: z.string(),
@@ -25,7 +26,10 @@ export const aiRouter = router({
 
       if (!response.ok) {
         const errorBody = await response.text();
-        throw new Error(`remove.bg API error: ${response.status} ${errorBody}`);
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `remove.bg API 错误: ${response.status} ${errorBody}`,
+        });
       }
 
       const buffer = await response.arrayBuffer();

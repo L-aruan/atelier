@@ -67,14 +67,47 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
 
   const isBatchMode = files.length > 1;
 
+  // Revoke object URLs on cleanup to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      files.forEach((f) => {
+        if (f.url.startsWith('blob:')) URL.revokeObjectURL(f.url);
+      });
+      outputs.forEach((o) => {
+        if (o.url.startsWith('blob:')) URL.revokeObjectURL(o.url);
+      });
+    };
+  }, [files, outputs]);
+
   const handleFiles = useCallback((rawFiles: File[]) => {
+    // Validate file sizes against manifest limit
+    const maxSizeStr = tool?.manifest.input.maxSize;
+    if (maxSizeStr) {
+      const match = maxSizeStr.match(/(\d+(?:\.\d+)?)\s*(mb|gb|kb)/i);
+      if (match) {
+        const num = parseFloat(match[1]);
+        const unit = match[2].toLowerCase();
+        const maxBytes = unit === 'gb' ? num * 1024 * 1024 * 1024
+          : unit === 'mb' ? num * 1024 * 1024
+          : num * 1024;
+        const oversized = rawFiles.filter((f) => f.size > maxBytes);
+        if (oversized.length > 0) {
+          addToast(
+            `${oversized.length} 个文件超过 ${maxSizeStr} 限制：${oversized.map((f) => f.name).join('、')}`,
+            'error',
+          );
+          return;
+        }
+      }
+    }
+
     const inputs = filesToFileInputs(rawFiles);
     setFiles(inputs);
     setOutputs([]);
     setBatchPhase('idle');
     setPreviewResults([]);
     setBatchResults([]);
-  }, []);
+  }, [tool, addToast]);
 
   const handleProcess = useCallback(
     async (inputFiles: FileInput[], options: ToolOptions): Promise<FileOutput[]> => {

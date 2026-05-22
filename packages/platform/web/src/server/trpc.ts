@@ -1,7 +1,18 @@
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 
-const t = initTRPC.create({ transformer: superjson });
+export interface Context {
+  userId?: string;
+}
+
+const t = initTRPC.context<Context>().create({ transformer: superjson });
 
 export const router = t.router;
 export const publicProcedure = t.procedure;
+
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.userId) {
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: '请先登录' });
+  }
+  return next({ ctx: { ...ctx, userId: ctx.userId } });
+});

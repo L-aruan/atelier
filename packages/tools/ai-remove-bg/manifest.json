@@ -19,6 +19,5 @@
   "output": {
     "formats": ["png"]
   },
-  "engine": "@atelier/engine-ai",
   "component": "./AiRemoveBgTool.tsx"
 }

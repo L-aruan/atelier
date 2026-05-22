@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { router, publicProcedure } from '../trpc';
+import { router, protectedProcedure } from '../trpc';
 
 export const docRouter = router({
-  formatBrush: publicProcedure
+  formatBrush: protectedProcedure
     .input(
       z.object({
         templateBase64: z.string(),

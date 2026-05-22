@@ -1,0 +1,13 @@
+{
+  "id": "image-resize",
+  "name": "调整尺寸",
+  "category": "image",
+  "description": "批量调整图片尺寸，支持等比缩放、指定宽高、填充模式",
+  "icon": "📐",
+  "version": "1.0.0",
+  "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
+  "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
+  "output": { "formats": ["jpeg", "png", "webp"] },
+  "engine": "@atelier/engine-image",
+  "component": "./ResizeTool.tsx"
+}

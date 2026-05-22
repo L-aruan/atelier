@@ -30,16 +30,6 @@ importers:
         specifier: ^5.4.0
         version: 5.9.3
 
-  packages/engines/engine-ai:
-    dependencies:
-      '@atelier/types':
-        specifier: workspace:*
-        version: link:../../shared/types
-    devDependencies:
-      typescript:
-        specifier: ^5.4.0
-        version: 5.9.3
-
   packages/engines/engine-image:
     dependencies:
       '@atelier/types':
@@ -55,9 +45,6 @@ importers:
 
   packages/platform/web:
     dependencies:
-      '@atelier/engine-ai':
-        specifier: workspace:*
-        version: link:../../engines/engine-ai
       '@atelier/engine-image':
         specifier: workspace:*
         version: link:../../engines/engine-image
@@ -79,6 +66,12 @@ importers:
       '@atelier/tool-image-format':
         specifier: workspace:*
         version: link:../../tools/image-format
+      '@atelier/tool-image-resize':
+        specifier: workspace:*
+        version: link:../../tools/image-resize
+      '@atelier/tool-image-watermark':
+        specifier: workspace:*
+        version: link:../../tools/image-watermark
       '@atelier/types':
         specifier: workspace:*
         version: link:../../shared/types
@@ -176,9 +169,6 @@ importers:
 
   packages/tools/ai-remove-bg:
     dependencies:
-      '@atelier/engine-ai':
-        specifier: workspace:*
-        version: link:../../engines/engine-ai
       '@atelier/types':
         specifier: workspace:*
         version: link:../../shared/types
@@ -295,6 +285,44 @@ importers:
       '@atelier/engine-image':
         specifier: workspace:*
         version: link:../../engines/engine-image
+      '@atelier/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+      '@atelier/ui-kit':
+        specifier: workspace:*
+        version: link:../../ui-kit
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
+  packages/tools/image-resize:
+    dependencies:
+      '@atelier/types':
+        specifier: workspace:*
+        version: link:../../shared/types
+      '@atelier/ui-kit':
+        specifier: workspace:*
+        version: link:../../ui-kit
+      react:
+        specifier: ^18.3.0
+        version: 18.3.1
+    devDependencies:
+      '@types/react':
+        specifier: ^18.3.0
+        version: 18.3.28
+      typescript:
+        specifier: ^5.4.0
+        version: 5.9.3
+
+  packages/tools/image-watermark:
+    dependencies:
       '@atelier/types':
         specifier: workspace:*
         version: link:../../shared/types

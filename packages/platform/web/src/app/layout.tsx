@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppInit } from '@/components/AppInit';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Navbar } from '@/components/Navbar';
 import { Providers } from '@/components/Providers';
 import { Toaster } from '@/components/Toaster';
@@ -18,12 +19,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body className={`${inter.className} bg-gray-50 min-h-screen`}>
         <Providers>
-          <AppInit />
-          <Navbar />
-          <Toaster />
-          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {children}
-          </main>
+          <ErrorBoundary>
+            <AppInit />
+            <Navbar />
+            <Toaster />
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {children}
+            </main>
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

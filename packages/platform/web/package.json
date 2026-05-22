@@ -10,7 +10,6 @@
     "clean": "rm -rf .next"
   },
   "dependencies": {
-    "@atelier/engine-ai": "workspace:*",
     "@atelier/engine-image": "workspace:*",
     "@atelier/tool-ai-remove-bg": "workspace:*",
     "@atelier/tool-doc-format-brush": "workspace:*",
@@ -18,6 +17,8 @@
     "@atelier/tool-image-crop": "workspace:*",
     "@atelier/tool-file-organizer": "workspace:*",
     "@atelier/tool-image-format": "workspace:*",
+    "@atelier/tool-image-resize": "workspace:*",
+    "@atelier/tool-image-watermark": "workspace:*",
     "@atelier/types": "workspace:*",
     "@atelier/ui-kit": "workspace:*",
     "@prisma/client": "^6.19.3",

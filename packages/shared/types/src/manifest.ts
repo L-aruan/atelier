@@ -27,7 +27,7 @@ export interface ToolManifest {
   runtime: ToolRuntime;
   input: ToolInput;
   output: ToolOutput;
-  engine: string;
+  engine?: string;
   component: string;
   customLayout?: boolean;
 }
