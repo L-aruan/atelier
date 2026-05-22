@@ -52,4 +52,62 @@ export const userRouter = router({
     if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: '用户不存在' });
     return user;
   }),
+
+  // Pinned tools
+  getPinnedTools: protectedProcedure.query(async ({ ctx }) => {
+    const pinned = await prisma.pinnedTool.findMany({
+      where: { userId: ctx.userId },
+      orderBy: { order: 'asc' },
+    });
+    return pinned.map((p) => p.toolId);
+  }),
+
+  pinTool: protectedProcedure
+    .input(z.object({ toolId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await prisma.pinnedTool.findUnique({
+        where: { userId_toolId: { userId: ctx.userId, toolId: input.toolId } },
+      });
+      if (existing) {
+        await prisma.pinnedTool.delete({ where: { id: existing.id } });
+        return { pinned: false };
+      }
+      const maxOrder = await prisma.pinnedTool.aggregate({
+        where: { userId: ctx.userId },
+        _max: { order: true },
+      });
+      await prisma.pinnedTool.create({
+        data: { userId: ctx.userId, toolId: input.toolId, order: (maxOrder._max.order ?? -1) + 1 },
+      });
+      return { pinned: true };
+    }),
+
+  // Recent tools
+  getRecentTools: protectedProcedure.query(async ({ ctx }) => {
+    const recent = await prisma.recentTool.findMany({
+      where: { userId: ctx.userId },
+      orderBy: { usedAt: 'desc' },
+      take: 20,
+    });
+    return recent.map((r) => ({ toolId: r.toolId, lastUsed: r.usedAt.getTime(), count: r.count }));
+  }),
+
+  recordToolUse: protectedProcedure
+    .input(z.object({ toolId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await prisma.recentTool.findUnique({
+        where: { userId_toolId: { userId: ctx.userId, toolId: input.toolId } },
+      });
+      if (existing) {
+        await prisma.recentTool.update({
+          where: { id: existing.id },
+          data: { usedAt: new Date(), count: existing.count + 1 },
+        });
+      } else {
+        await prisma.recentTool.create({
+          data: { userId: ctx.userId, toolId: input.toolId },
+        });
+      }
+      return { ok: true };
+    }),
 });
