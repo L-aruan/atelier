@@ -213,7 +213,9 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
     );
   }
 
-  if (!user) {
+  const requiresLogin = !manifest.runtime.offline || manifest.runtime.server;
+
+  if (!user && requiresLogin) {
     return (
       <div>
         <div className="mb-6">

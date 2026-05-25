@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
 import { Button } from '@atelier/ui-kit';
-import type { ToolProps } from '@atelier/types';
 import {
   scanFiles,
   planByName,
@@ -35,7 +34,7 @@ function topExtEntries(extGroups: Record<string, number>, limit: number): [strin
     .slice(0, limit);
 }
 
-export function FileOrganizerTool({ files: _files }: ToolProps) {
+export function FileOrganizerTool() {
   const [files, setFiles] = useState<File[]>([]);
   const [scanResult, setScanResult] = useState<FileScanResult | null>(null);
   const [mode, setMode] = useState<'name' | 'type'>('name');

@@ -9,6 +9,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@atelier/tool-image-platform-export": [
+        "../../tools/image-platform-export/src/index.ts"
       ]
     },
     "module": "ESNext",

@@ -17,6 +17,7 @@
     "@atelier/tool-image-crop": "workspace:*",
     "@atelier/tool-file-organizer": "workspace:*",
     "@atelier/tool-image-format": "workspace:*",
+    "@atelier/tool-image-platform-export": "workspace:*",
     "@atelier/tool-image-resize": "workspace:*",
     "@atelier/tool-image-watermark": "workspace:*",
     "@atelier/types": "workspace:*",

@@ -3,6 +3,7 @@
 import type { WorkflowStep } from '@/lib/workflow-types';
 import { toolRegistry } from '@/lib/tool-registry';
 import type { ImageFormat } from '@atelier/engine-image';
+import { EXPORT_BUNDLES, EXPORT_PRESETS } from '@atelier/tool-image-platform-export';
 
 interface WorkflowStepCardProps {
   step: WorkflowStep;
@@ -142,6 +143,81 @@ export function WorkflowStepCard({
               <input
                 type="range"
                 min={0.1}
+                max={1}
+                step={0.05}
+                value={quality}
+                onChange={(e) => patchOptions({ quality: parseFloat(e.target.value) })}
+                className="w-full"
+              />
+            </div>
+          </div>
+        );
+      }
+      case 'image-platform-export': {
+        const presetIds = Array.isArray(step.options.presetIds)
+          ? (step.options.presetIds as string[])
+          : EXPORT_BUNDLES[0].presetIds;
+        const mode = (step.options.mode as string) || 'fill';
+        const quality = typeof step.options.quality === 'number' ? step.options.quality : 0.9;
+        const outputFormat = (step.options.outputFormat as string) || 'image/jpeg';
+        const activeBundle =
+          EXPORT_BUNDLES.find(
+            (bundle) =>
+              bundle.presetIds.length === presetIds.length &&
+              bundle.presetIds.every((id) => presetIds.includes(id)),
+          ) ?? EXPORT_BUNDLES[0];
+        return (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">导出包</label>
+              <select
+                value={activeBundle.id}
+                onChange={(e) => {
+                  const bundle = EXPORT_BUNDLES.find((b) => b.id === e.target.value) ?? EXPORT_BUNDLES[0];
+                  patchOptions({ presetIds: [...bundle.presetIds] });
+                }}
+                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm"
+              >
+                {EXPORT_BUNDLES.map((bundle) => (
+                  <option key={bundle.id} value={bundle.id}>
+                    {bundle.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-gray-400 mt-1">
+                {EXPORT_PRESETS.filter((p) => presetIds.includes(p.id)).length} 个尺寸
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">适配方式</label>
+              <select
+                value={mode}
+                onChange={(e) => patchOptions({ mode: e.target.value })}
+                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm"
+              >
+                <option value="fill">铺满裁切</option>
+                <option value="fit">完整留白</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">输出格式</label>
+              <select
+                value={outputFormat}
+                onChange={(e) => patchOptions({ outputFormat: e.target.value })}
+                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm"
+              >
+                <option value="image/jpeg">JPEG</option>
+                <option value="image/png">PNG</option>
+                <option value="image/webp">WebP</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                质量 {quality.toFixed(2)}
+              </label>
+              <input
+                type="range"
+                min={0.5}
                 max={1}
                 step={0.05}
                 value={quality}

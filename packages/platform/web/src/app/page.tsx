@@ -3,6 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { FileDropHero } from '@/components/FileDropHero';
 import { PinnedTools } from '@/components/PinnedTools';
 import { RecentTools } from '@/components/RecentTools';
+import { P0QuickStarts } from '@/components/P0QuickStarts';
 import { CategoryTabs } from '@/components/CategoryTabs';
 import { ToolGrid } from '@/components/ToolGrid';
 import { toolRegistry } from '@/lib/tool-registry';
@@ -30,6 +31,7 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <FileDropHero />
+      <P0QuickStarts />
       <PinnedTools />
       <RecentTools />
       <section className="space-y-4">

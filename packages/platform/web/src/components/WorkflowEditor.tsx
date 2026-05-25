@@ -23,6 +23,14 @@ function defaultOptionsForTool(toolId: string): Record<string, unknown> {
       return { quality: 0.8, maxSizeMB: 1, maxWidthOrHeight: 1920 };
     case 'image-format':
       return { targetFormat: 'image/webp' as ImageFormat, quality: 0.92 };
+    case 'image-platform-export':
+      return {
+        presetIds: ['taobao-main', 'jd-main', 'pdd-main', 'taobao-detail', 'douyin-goods'],
+        mode: 'fill',
+        outputFormat: 'image/jpeg',
+        quality: 0.9,
+        backgroundColor: '#ffffff',
+      };
     default:
       return {};
   }

@@ -1,0 +1,13 @@
+{
+  "id": "image-platform-export",
+  "name": "多平台图片导出",
+  "category": "image",
+  "description": "一次生成电商主图、详情图和社媒封面的多尺寸 ZIP 包",
+  "icon": "📦",
+  "version": "1.0.0",
+  "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },
+  "input": { "accept": ["image/jpeg", "image/png", "image/webp"], "maxSize": "50MB", "batch": true },
+  "output": { "formats": ["zip"] },
+  "engine": "canvas",
+  "component": "./PlatformExportTool.tsx"
+}
