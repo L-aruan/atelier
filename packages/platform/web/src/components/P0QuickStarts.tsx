@@ -14,6 +14,27 @@ const QUICK_STARTS = [
     templateId: 'tpl-ecommerce',
   },
   {
+    id: 'ai-product-set',
+    title: 'AI 商品图一站式',
+    description: 'AI 抠图 → 场景合成 → 多平台导出，一条流水线搞定。',
+    action: '使用模板',
+    templateId: 'tpl-ai-product-set',
+  },
+  {
+    id: 'ai-image-gen',
+    title: 'AI 商品图生成',
+    description: '输入商品描述，AI 直接生成高质量商品图片。',
+    action: '打开工具',
+    href: '/tool/ai-image-gen',
+  },
+  {
+    id: 'ai-copy-gen',
+    title: 'AI 电商文案',
+    description: '一键生成淘宝、抖音、小红书等多平台风格文案。',
+    action: '打开工具',
+    href: '/tool/ai-copy-gen',
+  },
+  {
     id: 'platform-export',
     title: '多平台尺寸批量导出',
     description: '一张图导出电商主图、详情图和社媒封面 ZIP。',
@@ -51,7 +72,7 @@ export function P0QuickStarts() {
         <h2 className="text-lg font-semibold text-gray-900">核心场景</h2>
         <p className="text-sm text-gray-500 mt-1">优先打磨可直接交付结果的批量任务。</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {QUICK_STARTS.map((item) => (
           <div key={item.id} className="border border-gray-200 rounded-lg bg-white p-4">
             <h3 className="font-medium text-gray-900">{item.title}</h3>

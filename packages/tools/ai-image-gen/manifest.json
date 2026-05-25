@@ -1,0 +1,25 @@
+{
+  "id": "ai-image-gen",
+  "name": "AI 商品图生成",
+  "category": "ai",
+  "description": "输入商品描述，AI 自动生成高质量商品图片",
+  "icon": "🎨",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": [],
+    "maxSize": "0",
+    "batch": false
+  },
+  "output": {
+    "formats": ["png", "jpeg", "webp"]
+  },
+  "component": "./src/AiImageGenTool.tsx",
+  "customLayout": true,
+  "aiProvider": "openai"
+}

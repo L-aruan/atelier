@@ -6,6 +6,9 @@ import { imagePlatformExportTool } from '@atelier/tool-image-platform-export';
 import { imageResizeTool } from '@atelier/tool-image-resize';
 import { imageWatermarkTool } from '@atelier/tool-image-watermark';
 import { aiRemoveBgTool } from '@atelier/tool-ai-remove-bg';
+import { aiImageGenTool } from '@atelier/tool-ai-image-gen';
+import { aiCopyGenTool } from '@atelier/tool-ai-copy-gen';
+import { aiSceneComposeTool } from '@atelier/tool-ai-scene-compose';
 import { docFormatBrushTool } from '@atelier/tool-doc-format-brush';
 import { fileOrganizerTool } from '@atelier/tool-file-organizer';
 
@@ -17,6 +20,9 @@ export function registerAllTools() {
   toolRegistry.register(imageResizeTool);
   toolRegistry.register(imageWatermarkTool);
   toolRegistry.register(aiRemoveBgTool);
+  toolRegistry.register(aiImageGenTool);
+  toolRegistry.register(aiCopyGenTool);
+  toolRegistry.register(aiSceneComposeTool);
   toolRegistry.register(fileOrganizerTool);
   toolRegistry.register(docFormatBrushTool);
 }

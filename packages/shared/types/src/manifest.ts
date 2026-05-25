@@ -30,4 +30,5 @@ export interface ToolManifest {
   engine?: string;
   component: string;
   customLayout?: boolean;
+  aiProvider?: string;
 }

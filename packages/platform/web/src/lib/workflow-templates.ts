@@ -103,6 +103,57 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
       }),
     ],
   },
+  {
+    id: 'tpl-ai-product-set',
+    name: 'AI 商品图一站式',
+    description: 'AI 抠图 → 场景合成 → 多平台尺寸导出',
+    isTemplate: true,
+    createdAt: now(),
+    updatedAt: now(),
+    steps: [
+      newStep({
+        toolId: 'ai-remove-bg',
+        label: 'AI 抠图去背景',
+        options: {},
+      }),
+      newStep({
+        toolId: 'ai-scene-compose',
+        label: 'AI 场景合成',
+        options: {
+          scenePrompt: 'Professional studio background with soft gradient, warm lighting, product photography style',
+        },
+      }),
+      newStep({
+        toolId: 'image-platform-export',
+        label: '导出电商平台尺寸',
+        options: {
+          presetIds: ['taobao-main', 'jd-main', 'pdd-main', 'douyin-goods'],
+          mode: 'fill',
+          outputFormat: 'image/jpeg',
+          quality: 0.9,
+          backgroundColor: '#ffffff',
+        },
+      }),
+    ],
+  },
+  {
+    id: 'tpl-ai-copy-batch',
+    name: 'AI 批量文案生成',
+    description: '多商品一键生成淘宝/抖音/小红书风格文案',
+    isTemplate: true,
+    createdAt: now(),
+    updatedAt: now(),
+    steps: [
+      newStep({
+        toolId: 'ai-copy-gen',
+        label: 'AI 文案生成',
+        options: {
+          platform: 'general',
+          style: 'professional',
+        },
+      }),
+    ],
+  },
 ];
 
 export function createFromTemplate(templateId: string): Workflow | null {

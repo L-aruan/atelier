@@ -55,3 +55,18 @@ export function getKeyForProvider(provider: string): string | null {
   const entry = keys.find((k) => k.provider === provider);
   return entry?.key || null;
 }
+
+// 环境变量 fallback 映射（仅限 NEXT_PUBLIC_ 前缀的客户端可用）
+const PLATFORM_KEY_ENV_MAP: Record<string, string> = {
+  'openai': 'NEXT_PUBLIC_OPENAI_API_KEY',
+  'remove-bg': 'NEXT_PUBLIC_REMOVE_BG_KEY',
+};
+
+export function getEffectiveKey(provider: string): { key: string | null; isPlatformKey: boolean } {
+  const userKey = getKeyForProvider(provider);
+  if (userKey) return { key: userKey, isPlatformKey: false };
+
+  const envVar = PLATFORM_KEY_ENV_MAP[provider];
+  const platformKey = envVar ? (process.env[envVar] || null) : null;
+  return { key: platformKey, isPlatformKey: !!platformKey };
+}

@@ -9,21 +9,50 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 - **浏览器端处理** — 图片裁剪、压缩、格式转换等轻量任务直接在浏览器完成，零服务器成本
 - **批量处理** — 多文件上传 → 预览确认 → 全量执行 → 结果审查 → 一键下载
 - **工作流引擎** — 将多个工具串成流水线，预设模板一键复用
-- **AI 增强** — 支持 AI 去背景等能力，可使用自有 API Key 或平台通用 Key
+- **AI 增强** — AI 去背景、AI 生图、AI 文案、AI 场景合成，支持自有 Key 和平台 Key
 - **插件化架构** — 每个工具独立为 npm 包，通过 Manifest 声明能力，快速集成
 
 ## 已有工具
 
-| 工具 | 类别 | 运行环境 | 说明 |
-|------|------|----------|------|
-| 图片裁剪 | 图片 | 浏览器 | 自由裁剪、按比例裁剪、内置 15 个平台预设尺寸（淘宝/京东/抖音/小红书/B站等） |
-| 图片压缩 | 图片 | 浏览器 | 质量控制、体积限制、尺寸限制 |
-| 格式转换 | 图片 | 浏览器 | JPEG / PNG / WebP 互转 |
-| 调整尺寸 | 图片 | 浏览器 | 指定像素/百分比缩放，适应/填充模式，批量处理 |
-| 批量水印 | 图片 | 浏览器 | 文字水印、图片水印、平铺防盗模式，支持位置/透明度/旋转 |
-| AI 去背景 | AI | 服务端 | 基于 remove.bg API，支持自有 Key 和平台 Key |
-| 文件整理 | 实用工具 | 浏览器 | 按文件名或类型自动归类整理，打包下载 |
-| 文档格式刷 | 文档 | 服务端 | 将模板 Word 文档的格式应用到目标文档，一键统一格式 |
+### 图片工具（浏览器端）
+
+| 工具 | 说明 |
+|------|------|
+| 图片裁剪 | 自由裁剪、按比例裁剪、内置 15 个平台预设尺寸（淘宝/京东/抖音/小红书/B站等） |
+| 图片压缩 | 质量控制、体积限制、尺寸限制 |
+| 格式转换 | JPEG / PNG / WebP 互转 |
+| 调整尺寸 | 指定像素/百分比缩放，适应/填充模式，批量处理 |
+| 批量水印 | 文字水印、图片水印、平铺防盗模式，支持位置/透明度/旋转 |
+| 多平台导出 | 一键导出淘宝、京东、拼多多、抖音等平台尺寸 ZIP |
+
+### AI 工具（服务端）
+
+| 工具 | 说明 |
+|------|------|
+| AI 去背景 | 基于 remove.bg API，一键去除图片背景 |
+| AI 商品图生成 | 输入商品描述，GPT-Image-1 自动生成高质量商品图 |
+| AI 电商文案 | 输入商品信息，GPT-4o 一键生成淘宝/抖音/小红书/拼多多风格文案 |
+| AI 场景合成 | 抠图 + AI 生成背景，6 个预设场景模板，快速合成电商场景图 |
+
+### 其他工具
+
+| 工具 | 说明 |
+|------|------|
+| 文件整理 | 按文件名或类型自动归类整理，打包下载 |
+| 文档格式刷 | 将模板 Word 文档的格式应用到目标文档，一键统一格式 |
+
+## 工作流模板
+
+预设工作流一键复用：
+
+| 模板 | 流程 |
+|------|------|
+| 电商商品图批处理 | AI 抠图 → 多平台尺寸导出 |
+| AI 商品图一站式 | AI 抠图 → 场景合成 → 多平台导出 |
+| 多平台尺寸导出 | 一张图生成全部电商/社媒平台尺寸 |
+| 自媒体封面制作 | 16:9 裁剪 → WebP 转换 |
+| 图片批量压缩 | 压缩 → WebP 转换 |
+| AI 批量文案生成 | 多商品一键出文案 |
 
 ## 演示 (Demos)
 
@@ -49,6 +78,7 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 | API | tRPC (端到端类型安全) |
 | 数据库 | SQLite (开发) / PostgreSQL (生产) · Prisma ORM |
 | 客户端处理 | Canvas API · browser-image-compression |
+| AI 集成 | OpenAI API (GPT-4o / GPT-Image-1) · remove.bg API |
 | Monorepo | pnpm workspaces · Turborepo |
 
 ## 项目结构
@@ -57,12 +87,16 @@ Atelier 聚合互联网上优秀的媒体处理工具，提供统一的中文化
 atelier/
 ├── packages/
 │   ├── tools/                  # 工具插件
-│   │   ├── image-crop/         # 图片裁剪（含平台预设尺寸）
+│   │   ├── image-crop/         # 图片裁剪
 │   │   ├── image-compress/     # 图片压缩
 │   │   ├── image-format/       # 格式转换
 │   │   ├── image-resize/       # 调整尺寸
 │   │   ├── image-watermark/    # 批量水印
+│   │   ├── image-platform-export/  # 多平台导出
 │   │   ├── ai-remove-bg/       # AI 去背景
+│   │   ├── ai-image-gen/       # AI 商品图生成
+│   │   ├── ai-copy-gen/        # AI 电商文案
+│   │   ├── ai-scene-compose/   # AI 场景合成
 │   │   ├── doc-format-brush/   # 文档格式刷
 │   │   └── file-organizer/     # 文件整理
 │   ├── engines/                # 共享处理引擎
@@ -134,12 +168,32 @@ interface AtelierTool {
 }
 ```
 
+### AI 工具开发要点
+
+AI 工具在 manifest 中声明 `aiProvider` 和 `customLayout`，ToolPageShell 会自动注入 `apiKey` 和 `callApi`：
+
+```json
+{
+  "category": "ai",
+  "aiProvider": "openai",
+  "customLayout": true,
+  "runtime": { "client": false, "server": true }
+}
+```
+
 ## API Key 配置
 
-AI 工具支持两种 Key 来源：
+AI 工具支持混合 Key 模式：
 
-- **自有 Key**：在 设置 → API Key 管理 中添加（支持 remove.bg、OpenAI、OpenRouter 等）
-- **平台 Key**：零配置使用低成本模型（需平台端配置）
+- **自有 Key**：在 设置 → API Key 管理 中添加（支持 remove.bg、OpenAI、OpenRouter、Stability AI）
+- **平台 Key**：服务端通过环境变量配置 fallback key，零配置使用
+
+当前支持的 AI 服务：
+
+| Provider | 用途 | 环境变量 |
+|----------|------|----------|
+| OpenAI | 文案生成 (GPT-4o)、图片生成 (GPT-Image-1) | `OPENAI_API_KEY` |
+| remove.bg | AI 抠图 | `REMOVE_BG_API_KEY` |
 
 ## License
 

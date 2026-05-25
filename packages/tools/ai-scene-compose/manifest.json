@@ -1,0 +1,24 @@
+{
+  "id": "ai-scene-compose",
+  "name": "AI 场景合成",
+  "category": "ai",
+  "description": "商品图一键抠图 + AI 生成背景，快速合成电商场景图",
+  "icon": "🖼️",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": ["image/jpeg", "image/png", "image/webp"],
+    "maxSize": "25MB",
+    "batch": false
+  },
+  "output": {
+    "formats": ["image/png"]
+  },
+  "component": "./src/AiSceneComposeTool.tsx",
+  "aiProvider": "openai"
+}

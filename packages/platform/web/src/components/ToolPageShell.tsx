@@ -9,7 +9,7 @@ import { FileDropZone } from '@atelier/ui-kit';
 import { toolRegistry } from '@/lib/tool-registry';
 import { filesToFileInputs, formatFileSize } from '@/lib/file-utils';
 import { runPreview, runBatch, retryFailed } from '@/lib/batch-engine';
-import { getKeyForProvider } from '@/lib/key-store';
+import { getEffectiveKey } from '@/lib/key-store';
 import { trpc } from '@/lib/trpc-client';
 import { useToastStore } from '@/lib/toast-store';
 import type { FormatOptions } from '@atelier/tool-doc-format-brush/src/engine';
@@ -38,11 +38,14 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
   const [processing, setProcessing] = useState(false);
 
   const removeBgMutation = trpc.ai.removeBg.useMutation();
+  const generateImageMutation = trpc.ai.generateImage.useMutation();
+  const generateCopyMutation = trpc.ai.generateCopy.useMutation();
   const formatBrushMutation = trpc.doc.formatBrush.useMutation();
   const addToast = useToastStore((s) => s.addToast);
 
   const isAiTool = tool?.manifest.category === 'ai';
-  const aiApiKey = isAiTool ? getKeyForProvider('remove-bg') : null;
+  const aiProvider = tool?.manifest.aiProvider || 'remove-bg';
+  const { key: aiApiKey } = isAiTool ? getEffectiveKey(aiProvider) : { key: null };
 
   const isDocFormatBrush = tool?.manifest.id === 'doc-format-brush';
   const callFormatBrushFn = useMemo(() => {
@@ -53,10 +56,35 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
 
   const aiCallApi = useMemo(() => {
     if (!isAiTool) return undefined;
+    const toolId = tool?.manifest.id;
+    if (toolId === 'ai-image-gen') {
+      return async (params: {
+        prompt: string;
+        size?: '1024x1024' | '1536x1024' | '1024x1536' | 'auto';
+        quality?: 'low' | 'medium' | 'high' | 'auto';
+        n?: number;
+        background?: 'transparent' | 'opaque' | 'auto';
+        apiKey?: string;
+      }) => {
+        return generateImageMutation.mutateAsync(params);
+      };
+    }
+    if (toolId === 'ai-copy-gen') {
+      return async (params: {
+        productName: string;
+        sellingPoints: string;
+        platform?: 'taobao' | 'douyin' | 'xiaohongshu' | 'pdd' | 'general';
+        style?: 'professional' | 'casual' | 'luxury' | 'youthful';
+        apiKey?: string;
+      }) => {
+        return generateCopyMutation.mutateAsync(params);
+      };
+    }
+    // ai-remove-bg, ai-scene-compose 都用 removeBg API
     return async (imageBase64: string, apiKey?: string) => {
       return removeBgMutation.mutateAsync({ imageBase64, apiKey });
     };
-  }, [isAiTool, removeBgMutation]);
+  }, [isAiTool, tool, generateImageMutation, generateCopyMutation, removeBgMutation]);
 
   const [batchPhase, setBatchPhase] = useState<BatchPhase>('idle');
   const [previewResults, setPreviewResults] = useState<BatchResult[]>([]);
@@ -291,6 +319,11 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
               callFormatBrush: callFormatBrushFn,
               addToast,
             })}
+            {...(isAiTool && {
+              apiKey: aiApiKey,
+              callApi: aiCallApi,
+              onNavigateToKeys: () => router.push('/settings/keys'),
+            })}
           />
         </div>
       </div>
@@ -351,6 +384,15 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
                 apiKey: aiApiKey,
                 callApi: aiCallApi,
                 onNavigateToKeys: () => router.push('/settings/keys'),
+              })}
+              {...(tool?.manifest.id === 'ai-scene-compose' && {
+                callGenerateImage: async (params: {
+                  prompt: string;
+                  size?: '1024x1024' | '1536x1024' | '1024x1536' | 'auto';
+                  quality?: 'low' | 'medium' | 'high' | 'auto';
+                  n?: number;
+                  apiKey?: string;
+                }) => generateImageMutation.mutateAsync(params),
               })}
             />
           )}

@@ -1,0 +1,25 @@
+{
+  "id": "ai-copy-gen",
+  "name": "AI 电商文案",
+  "category": "ai",
+  "description": "输入商品信息，一键生成淘宝、抖音、小红书等多平台风格文案",
+  "icon": "✍️",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": [],
+    "maxSize": "0",
+    "batch": false
+  },
+  "output": {
+    "formats": ["text/plain"]
+  },
+  "component": "./src/AiCopyGenTool.tsx",
+  "customLayout": true,
+  "aiProvider": "openai"
+}
