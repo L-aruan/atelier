@@ -127,7 +127,12 @@ export function PlatformExportTool({
           {processing ? '导出中...' : `导出 ${files.length} 张图片`}
         </Button>
         {outputs.length > 0 && (
-          <Button type="button" variant="secondary" onClick={() => onDownload(outputs)} className="w-full">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => onDownload(outputs)}
+            className="w-full"
+          >
             下载 ZIP
           </Button>
         )}

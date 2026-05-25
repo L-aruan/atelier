@@ -69,7 +69,7 @@ export function ImageFormatTool({ files, onProcess, onDownload, processing, outp
             onChange={(e) => setQuality(Number(e.target.value))}
             className="w-full"
           />
-          <p className="text-xs text-gray-400 mt-1">PNG 格式忽略此参数</p>
+          <p className="text-xs text-gray-400 mt-1">PNG 格式会忽略此参数</p>
         </div>
       </div>
 

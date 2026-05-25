@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useRef, useCallback } from 'react';
 
 interface CompareSliderProps {
@@ -46,10 +47,13 @@ export function CompareSlider({
           draggable={false}
         />
       </div>
-      <div className="absolute top-0 bottom-0" style={{ left: `${position}%`, transform: 'translateX(-50%)' }}>
+      <div
+        className="absolute top-0 bottom-0"
+        style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+      >
         <div className="w-0.5 h-full bg-white shadow-lg" />
         <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 text-xs font-bold">
-          ⇔
+          ⇆
         </div>
       </div>
       <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">

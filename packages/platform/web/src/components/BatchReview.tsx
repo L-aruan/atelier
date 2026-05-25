@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import type { BatchResult } from '@/lib/batch-engine';
 import { CompareSlider } from './CompareSlider';
@@ -58,7 +59,7 @@ export function BatchReview({ results, onRetryFailed, retrying }: BatchReviewPro
             <>
               <span className="mx-1">·</span>
               <span className="inline-flex items-center gap-1 text-red-500 font-semibold">
-                ✗ {failedResults.length}
+                × {failedResults.length}
               </span>
               <span className="mx-1">需检查</span>
             </>
@@ -95,7 +96,7 @@ export function BatchReview({ results, onRetryFailed, retrying }: BatchReviewPro
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-red-50 text-red-400 text-lg">
-                  ✗
+                  ×
                 </div>
               )}
             </button>

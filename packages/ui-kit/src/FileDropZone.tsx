@@ -35,7 +35,9 @@ export function FileDropZone({
       setIsDragging(false);
       const files = Array.from(e.dataTransfer.files);
       if (accept) {
-        const filtered = files.filter((f) => accept.some((a) => f.type.startsWith(a.replace('/*', '/'))));
+        const filtered = files.filter((f) =>
+          accept.some((a) => f.type.startsWith(a.replace('/*', '/'))),
+        );
         onFiles(filtered);
       } else {
         onFiles(files);
@@ -81,9 +83,9 @@ export function FileDropZone({
       />
       {children || (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-          <div className="text-4xl mb-3">📂</div>
+          <div className="text-4xl mb-3">📁</div>
           <p className="text-gray-700 font-medium">拖放文件到这里，或点击上传</p>
-          <p className="text-gray-500 text-sm mt-1">支持图片、视频、音频、PDF 等</p>
+          <p className="text-gray-500 text-sm mt-1">支持图片、视频、音频、PDF 等文件</p>
         </div>
       )}
     </div>

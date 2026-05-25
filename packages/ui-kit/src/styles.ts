@@ -9,11 +9,11 @@ export const categoryColors: Record<string, string> = {
 };
 
 export const categoryLabels: Record<string, string> = {
-  image: '🖼️ 图片',
-  video: '🎬 视频',
-  design: '🎨 设计',
-  audio: '🔊 音频',
-  document: '📄 文档',
-  ai: '🤖 AI',
-  utility: '🧰 实用工具',
+  image: '图片',
+  video: '视频',
+  design: '设计',
+  audio: '音频',
+  document: '文档',
+  ai: 'AI',
+  utility: '实用工具',
 };

@@ -16,7 +16,7 @@ export const EXPORT_PRESETS: ExportPreset[] = [
   { id: 'taobao-detail', label: '淘宝详情图', width: 750, height: 1000, platform: 'taobao' },
   { id: 'douyin-goods', label: '抖音商品图', width: 750, height: 1000, platform: 'douyin' },
   { id: 'xiaohongshu', label: '小红书封面', width: 1080, height: 1440, platform: 'xiaohongshu' },
-  { id: 'bilibili-cover', label: 'B站封面', width: 1920, height: 1080, platform: 'bilibili' },
+  { id: 'bilibili-cover', label: 'B 站封面', width: 1920, height: 1080, platform: 'bilibili' },
   { id: 'wechat-cover', label: '公众号封面', width: 900, height: 500, platform: 'wechat' },
 ];
 
@@ -108,9 +108,7 @@ export async function processPlatformExport(
   options: ToolOptions,
 ): Promise<FileOutput> {
   const opts = options as PlatformExportOptions;
-  const selectedIds = opts.presetIds?.length
-    ? opts.presetIds
-    : EXPORT_BUNDLES[0].presetIds;
+  const selectedIds = opts.presetIds?.length ? opts.presetIds : EXPORT_BUNDLES[0].presetIds;
   const presets = EXPORT_PRESETS.filter((p) => selectedIds.includes(p.id));
   if (presets.length === 0) throw new Error('请至少选择一个导出尺寸');
 

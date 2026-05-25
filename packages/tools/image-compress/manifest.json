@@ -2,7 +2,7 @@
   "id": "image-compress",
   "name": "图片压缩",
   "category": "image",
-  "description": "智能压缩图片，保持画质的同时大幅减小文件体积",
+  "description": "智能压缩图片，在保持画质的同时减少文件体积",
   "icon": "🗜️",
   "version": "1.0.0",
   "runtime": { "client": true, "server": false, "offline": true, "downloadable": true },

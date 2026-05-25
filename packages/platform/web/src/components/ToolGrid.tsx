@@ -48,7 +48,7 @@ export function ToolGrid({ tools, isLoading, searchActive }: ToolGridProps) {
     if (searchActive) {
       return (
         <EmptyState
-          icon="🔍"
+          icon="🔎"
           title="未找到相关工具"
           description="试试其他关键词，或切换分类浏览全部工具。"
         />
@@ -56,7 +56,7 @@ export function ToolGrid({ tools, isLoading, searchActive }: ToolGridProps) {
     }
     return (
       <EmptyState
-        icon="📂"
+        icon="🧰"
         title="该分类下暂无工具"
         description="请选择其他分类查看可用工具。"
       />

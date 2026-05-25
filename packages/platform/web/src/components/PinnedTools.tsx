@@ -15,9 +15,7 @@ export function PinnedTools() {
     return () => window.removeEventListener(LOCAL_STORAGE_CHANGED, load);
   }, []);
 
-  const pinnedTools = pinnedIds
-    .map((id) => toolRegistry.get(id))
-    .filter(Boolean);
+  const pinnedTools = pinnedIds.map((id) => toolRegistry.get(id)).filter(Boolean);
 
   if (pinnedTools.length === 0) return null;
 

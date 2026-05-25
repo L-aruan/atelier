@@ -30,17 +30,11 @@ export function BatchProgress({ completed, total, failed, currentFile }: BatchPr
         <span>
           进度: <span className="font-semibold text-gray-900">{completed}</span> / {total}
         </span>
-        {failed > 0 && (
-          <span className="text-red-500">
-            {failed} 个失败
-          </span>
-        )}
+        {failed > 0 && <span className="text-red-500">{failed} 个失败</span>}
       </div>
 
       {currentFile && (
-        <p className="text-xs text-gray-400 truncate text-center">
-          正在处理: {currentFile}
-        </p>
+        <p className="text-xs text-gray-400 truncate text-center">正在处理: {currentFile}</p>
       )}
     </div>
   );

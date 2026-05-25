@@ -1,4 +1,5 @@
 'use client';
+
 import { clsx } from 'clsx';
 import { categoryLabels } from '@atelier/ui-kit';
 

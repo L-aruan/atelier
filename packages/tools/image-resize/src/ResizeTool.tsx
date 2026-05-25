@@ -32,7 +32,6 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
 
   return (
     <div className="space-y-6">
-      {/* Mode selection */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">调整模式</label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -54,7 +53,6 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
         </div>
       </div>
 
-      {/* Size inputs */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -84,7 +82,6 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
         )}
       </div>
 
-      {/* Keep ratio toggle */}
       {mode === 'exact' && (
         <label className="flex items-center gap-2 text-sm text-gray-700">
           <input
@@ -97,7 +94,6 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
         </label>
       )}
 
-      {/* Background color for fit/fill */}
       {(mode === 'fit' || mode === 'fill') && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">背景颜色</label>
@@ -113,7 +109,6 @@ export function ResizeTool({ files, onProcess, onDownload, processing, outputs }
         </div>
       )}
 
-      {/* Actions */}
       <div className="flex gap-3">
         <Button onClick={handleProcess} disabled={processing || files.length === 0} className="flex-1">
           {processing ? '处理中...' : `调整尺寸 (${files.length} 张)`}

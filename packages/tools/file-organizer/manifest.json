@@ -3,7 +3,7 @@
   "name": "文件整理",
   "category": "utility",
   "description": "按文件名或类型自动归类整理，打包下载",
-  "icon": "📂",
+  "icon": "📁",
   "version": "1.0.0",
   "runtime": {
     "client": true,

@@ -29,7 +29,6 @@ export function AiRemoveBgTool({
   const [useOwnKey, setUseOwnKey] = useState(true);
   const hasKey = !!apiKey;
   const hasOutput = outputs.length > 0;
-
   const canProcess = !!callApi && (hasKey || !useOwnKey);
 
   const handleRemoveBg = useCallback(async () => {
@@ -41,15 +40,19 @@ export function AiRemoveBgTool({
 
   return (
     <div className="space-y-6">
-      <div className={`rounded-lg p-4 text-sm border ${hasKey ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'}`}>
+      <div
+        className={`rounded-lg p-4 text-sm border ${
+          hasKey ? 'bg-green-50 border-green-200' : 'bg-amber-50 border-amber-200'
+        }`}
+      >
         <div className="flex items-center justify-between">
           <div>
             <p className={hasKey ? 'text-green-800' : 'text-amber-800 font-medium'}>
-              {hasKey ? '✓ 已配置 remove.bg API Key' : '⚠ 需要先添加 remove.bg API Key'}
+              {hasKey ? '已配置 remove.bg API Key' : '需要先添加 remove.bg API Key'}
             </p>
             <p className={`text-xs mt-1 ${hasKey ? 'text-green-600' : 'text-amber-600'}`}>
               {hasKey
-                ? '使用你的 Key 可获得更好的配额'
+                ? '使用你的 Key 可获得更稳定的处理额度'
                 : '前往设置添加 Key 后即可使用，免费 Key 每月可处理 50 张图'}
             </p>
           </div>
@@ -71,19 +74,11 @@ export function AiRemoveBgTool({
       {hasKey && (
         <div className="flex items-center gap-4 text-sm">
           <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={useOwnKey}
-              onChange={() => setUseOwnKey(true)}
-            />
+            <input type="radio" checked={useOwnKey} onChange={() => setUseOwnKey(true)} />
             <span>使用我的 Key</span>
           </label>
           <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={!useOwnKey}
-              onChange={() => setUseOwnKey(false)}
-            />
+            <input type="radio" checked={!useOwnKey} onChange={() => setUseOwnKey(false)} />
             <span>使用平台 Key（较慢）</span>
           </label>
         </div>
@@ -104,11 +99,7 @@ export function AiRemoveBgTool({
                   backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px',
                 }}
               >
-                <img
-                  src={output.url}
-                  alt={output.name}
-                  className="w-full h-full object-contain"
-                />
+                <img src={output.url} alt={output.name} className="w-full h-full object-contain" />
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1.5 truncate">
                 {files[i]?.name || output.name}
@@ -124,7 +115,11 @@ export function AiRemoveBgTool({
           disabled={processing || files.length === 0 || !canProcess}
           className="flex-1"
         >
-          {processing ? '处理中...' : !canProcess ? '请先添加 API Key' : `AI 抠图 ${files.length} 张图片`}
+          {processing
+            ? '处理中...'
+            : !canProcess
+              ? '请先添加 API Key'
+              : `AI 抠图 ${files.length} 张图片`}
         </Button>
         {hasOutput && (
           <Button variant="secondary" onClick={() => onDownload(outputs)}>

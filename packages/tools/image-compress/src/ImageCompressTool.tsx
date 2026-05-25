@@ -72,10 +72,10 @@ export function ImageCompressTool({ files, onProcess, onDownload, processing, ou
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
           <div className="flex flex-wrap justify-between gap-2">
             <span className="text-gray-600">
-              压缩前: <strong>{formatSize(totalInputSize)}</strong>
+              压缩前 <strong>{formatSize(totalInputSize)}</strong>
             </span>
             <span className="text-green-600">
-              压缩后: <strong>{formatSize(totalOutputSize)}</strong>
+              压缩后 <strong>{formatSize(totalOutputSize)}</strong>
             </span>
             <span className="text-green-700 font-bold">节省 {savingsPercent}%</span>
           </div>

@@ -31,7 +31,7 @@ export function RecentTools() {
   return (
     <div className="mb-6">
       <h3 className="text-sm font-medium text-gray-500 mb-2 flex items-center gap-1">
-        🕐 最近使用
+        最近使用
       </h3>
       <div className="space-y-1">
         {recent.slice(0, 5).map((entry) => {

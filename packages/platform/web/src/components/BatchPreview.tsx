@@ -1,4 +1,5 @@
 'use client';
+
 import type { BatchResult } from '@/lib/batch-engine';
 import { CompareSlider } from './CompareSlider';
 import { Button } from '@atelier/ui-kit';
@@ -20,10 +21,10 @@ export function BatchPreview({ results, totalFiles, onConfirm, onAdjust }: Batch
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-2 px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-        <span className="text-lg">⚡</span>
+        <span className="text-lg">⚠</span>
         <span>
           已用前 <strong>{results.length}</strong> 张图片试运行，请确认效果后再处理全部
-          <strong> {totalFiles}</strong> 张
+          <strong> {totalFiles}</strong> 张。
         </span>
       </div>
 
@@ -45,7 +46,7 @@ export function BatchPreview({ results, totalFiles, onConfirm, onAdjust }: Batch
               </>
             ) : (
               <div className="p-8 text-center text-red-500 text-sm">
-                <div className="text-3xl mb-2">❌</div>
+                <div className="text-3xl mb-2">×</div>
                 <p className="font-medium">{r.input.name}</p>
                 <p className="text-xs mt-1 text-red-400">{r.error}</p>
               </div>
@@ -55,9 +56,7 @@ export function BatchPreview({ results, totalFiles, onConfirm, onAdjust }: Batch
       </div>
 
       <div className="flex gap-3 justify-center pt-2">
-        <Button onClick={onConfirm}>
-          ✓ 效果满意，处理全部 {totalFiles} 张
-        </Button>
+        <Button onClick={onConfirm}>效果满意，处理全部 {totalFiles} 张</Button>
         <Button variant="secondary" onClick={onAdjust}>
           调整参数重试
         </Button>

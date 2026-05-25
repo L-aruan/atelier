@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { recordToolUse } from '@/lib/pinned-store';
@@ -64,10 +65,8 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
   const [retrying, setRetrying] = useState(false);
 
   const lastOptionsRef = useRef<ToolOptions>({});
-
   const isBatchMode = files.length > 1;
 
-  // Revoke object URLs on cleanup to prevent memory leaks
   useEffect(() => {
     return () => {
       files.forEach((f) => {
@@ -79,35 +78,47 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
     };
   }, [files, outputs]);
 
-  const handleFiles = useCallback((rawFiles: File[]) => {
-    // Validate file sizes against manifest limit
-    const maxSizeStr = tool?.manifest.input.maxSize;
-    if (maxSizeStr) {
-      const match = maxSizeStr.match(/(\d+(?:\.\d+)?)\s*(mb|gb|kb)/i);
-      if (match) {
-        const num = parseFloat(match[1]);
-        const unit = match[2].toLowerCase();
-        const maxBytes = unit === 'gb' ? num * 1024 * 1024 * 1024
-          : unit === 'mb' ? num * 1024 * 1024
-          : num * 1024;
-        const oversized = rawFiles.filter((f) => f.size > maxBytes);
-        if (oversized.length > 0) {
-          addToast(
-            `${oversized.length} 个文件超过 ${maxSizeStr} 限制：${oversized.map((f) => f.name).join('、')}`,
-            'error',
-          );
-          return;
-        }
-      }
-    }
-
-    const inputs = filesToFileInputs(rawFiles);
-    setFiles(inputs);
-    setOutputs([]);
+  const resetBatch = useCallback(() => {
     setBatchPhase('idle');
     setPreviewResults([]);
     setBatchResults([]);
-  }, [tool, addToast]);
+    setProgress({ completed: 0, total: 0, failed: 0, currentFile: '' });
+  }, []);
+
+  const handleFiles = useCallback(
+    (rawFiles: File[]) => {
+      const maxSizeStr = tool?.manifest.input.maxSize;
+      if (maxSizeStr) {
+        const match = maxSizeStr.match(/(\d+(?:\.\d+)?)\s*(mb|gb|kb)/i);
+        if (match) {
+          const num = parseFloat(match[1]);
+          const unit = match[2].toLowerCase();
+          const maxBytes =
+            unit === 'gb'
+              ? num * 1024 * 1024 * 1024
+              : unit === 'mb'
+                ? num * 1024 * 1024
+                : num * 1024;
+          const oversized = rawFiles.filter((f) => f.size > maxBytes);
+          if (oversized.length > 0) {
+            addToast(
+              `${oversized.length} 个文件超过 ${maxSizeStr} 限制：${oversized
+                .map((f) => f.name)
+                .join('、')}`,
+              'error',
+            );
+            return;
+          }
+        }
+      }
+
+      const inputs = filesToFileInputs(rawFiles);
+      setFiles(inputs);
+      setOutputs([]);
+      resetBatch();
+    },
+    [tool, addToast, resetBatch],
+  );
 
   const handleProcess = useCallback(
     async (inputFiles: FileInput[], options: ToolOptions): Promise<FileOutput[]> => {
@@ -147,12 +158,16 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
     setBatchPhase('executing');
     setProgress({ completed: 0, total: files.length, failed: 0, currentFile: '' });
 
-    let failCount = 0;
-    const results = await runBatch(tool, files, lastOptionsRef.current, (completed, total, currentFile) => {
-      setProgress((prev) => ({ ...prev, completed, total, currentFile }));
-    });
+    const results = await runBatch(
+      tool,
+      files,
+      lastOptionsRef.current,
+      (completed, total, currentFile) => {
+        setProgress((prev) => ({ ...prev, completed, total, currentFile }));
+      },
+    );
 
-    failCount = results.filter((r) => r.status === 'failed').length;
+    const failCount = results.filter((r) => r.status === 'failed').length;
     setProgress((prev) => ({ ...prev, completed: files.length, failed: failCount, currentFile: '' }));
     setBatchResults(results);
     setBatchPhase('review');
@@ -167,9 +182,14 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
     if (!tool) return;
     setRetrying(true);
     const failed = batchResults.filter((r) => r.status === 'failed');
-    const retried = await retryFailed(tool, failed, lastOptionsRef.current, (completed, total, currentFile) => {
-      setProgress({ completed, total, failed: 0, currentFile });
-    });
+    const retried = await retryFailed(
+      tool,
+      failed,
+      lastOptionsRef.current,
+      (completed, total, currentFile) => {
+        setProgress({ completed, total, failed: 0, currentFile });
+      },
+    );
 
     setBatchResults((prev) => {
       const updated = [...prev];
@@ -197,7 +217,7 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
   if (!tool) {
     return (
       <div className="text-center py-20 text-gray-500">
-        <div className="text-5xl mb-4">🔍</div>
+        <div className="text-5xl mb-4">🔎</div>
         <p className="text-lg">工具未找到</p>
       </div>
     );
@@ -228,7 +248,7 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
           </div>
         </div>
         <div className="bg-white border border-gray-200 rounded-xl p-12 text-center">
-          <div className="text-5xl mb-4">🔒</div>
+          <div className="text-5xl mb-4">🔐</div>
           <h2 className="text-lg font-semibold text-gray-900 mb-2">请先登录</h2>
           <p className="text-gray-500 text-sm mb-6">登录后即可使用所有在线工具</p>
           <Link
@@ -311,9 +331,7 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
                 onClick={() => {
                   setFiles([]);
                   setOutputs([]);
-                  setBatchPhase('idle');
-                  setPreviewResults([]);
-                  setBatchResults([]);
+                  resetBatch();
                 }}
                 className="text-sm text-gray-400 hover:text-gray-600"
               >
