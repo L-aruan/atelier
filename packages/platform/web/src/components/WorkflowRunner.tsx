@@ -10,6 +10,7 @@ import { downloadAsZip } from '@/lib/download-utils';
 import { trpc } from '@/lib/trpc-client';
 import { getKeyForProvider } from '@/lib/key-store';
 import { toolRegistry } from '@/lib/tool-registry';
+import { useAuth } from '@/lib/auth-context';
 
 interface WorkflowRunnerProps {
   workflow: Workflow;
@@ -57,8 +58,10 @@ export function WorkflowRunner({ workflow, files: initialFiles, onComplete, onBa
   const [wfRunState, setWfRunState] = useState<WorkflowExecution | null>(null);
   const [outputs, setOutputs] = useState<FileOutput[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   const removeBgMutation = trpc.ai.removeBg.useMutation();
+  const recordExecutionMutation = trpc.execution.record.useMutation();
 
   const extraOptions = useMemo(
     () => ({
@@ -95,6 +98,7 @@ export function WorkflowRunner({ workflow, files: initialFiles, onComplete, onBa
     setRunning(true);
     setError(null);
     setOutputs(null);
+    const startTime = Date.now();
     try {
       const result = await executeWorkflow(
         workflow,
@@ -104,6 +108,29 @@ export function WorkflowRunner({ workflow, files: initialFiles, onComplete, onBa
         },
         extraOptions,
       );
+
+      // Record execution if user is logged in
+      if (user) {
+        const duration = Date.now() - startTime;
+        const successCount = result.outputs.length;
+        const failCount = files.length - successCount;
+        try {
+          recordExecutionMutation.mutate({
+            workflowId: workflow.id,
+            workflowName: workflow.name,
+            totalFiles: files.length,
+            successCount,
+            failCount,
+            skippedCount: 0,
+            duration,
+            status: result.status === 'completed' ? (failCount > 0 ? 'partial' : 'completed') : 'failed',
+            stepDetails: JSON.stringify(wfRunState?.stepResults ?? []),
+          });
+        } catch {
+          // Silently fail - don't block user workflow
+        }
+      }
+
       if (result.status === 'failed') {
         setError(result.errorMessage ?? '执行失败');
         setOutputs(null);
@@ -117,7 +144,7 @@ export function WorkflowRunner({ workflow, files: initialFiles, onComplete, onBa
     } finally {
       setRunning(false);
     }
-  }, [files, workflow, extraOptions, onComplete]);
+  }, [files, workflow, extraOptions, onComplete, user, recordExecutionMutation]);
 
   const progressPct = progressPercent(wfRunState, files.length, workflow.steps.length);
 

@@ -5,12 +5,14 @@ export interface CopyGenOptions extends ToolOptions {
   sellingPoints: string;
   platform?: 'taobao' | 'douyin' | 'xiaohongshu' | 'pdd' | 'general';
   style?: 'professional' | 'casual' | 'luxury' | 'youthful';
+  brandTone?: string;
   apiKey?: string;
   callApi: (params: {
     productName: string;
     sellingPoints: string;
     platform?: string;
     style?: string;
+    brandTone?: string;
     apiKey?: string;
   }) => Promise<{ title: string; description: string; tags: string[] }>;
 }
@@ -36,6 +38,7 @@ export async function processCopyGen(
     sellingPoints: opts.sellingPoints,
     platform: opts.platform,
     style: opts.style,
+    brandTone: opts.brandTone,
     apiKey: opts.apiKey,
   });
 

@@ -3,6 +3,7 @@ import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
 export interface SceneComposeOptions extends ToolOptions {
   scenePrompt: string;
   apiKey?: string;
+  customBackgroundBase64?: string;
   callRemoveBg: (imageBase64: string, apiKey?: string) => Promise<{ resultBase64: string; type: string }>;
   callGenerateImage: (params: {
     prompt: string;
@@ -44,19 +45,20 @@ export async function processSceneCompose(
   const imageBase64 = await fileToBase64(input.file);
   const removeBgResult = await opts.callRemoveBg(imageBase64, opts.apiKey);
 
-  // Step 2: Generate scene background
-  const bgResult = await opts.callGenerateImage({
-    prompt: opts.scenePrompt,
-    size: '1024x1024',
-    quality: 'high',
-    n: 1,
-    apiKey: opts.apiKey,
-  });
+  // Step 2: Get scene background (custom upload or AI generated)
+  const bgBase64 = opts.customBackgroundBase64
+    || (await opts.callGenerateImage({
+      prompt: opts.scenePrompt,
+      size: '1024x1024',
+      quality: 'high',
+      n: 1,
+      apiKey: opts.apiKey,
+    })).images[0];
 
   // Step 3: Composite using Canvas
   const [cutoutImg, bgImg] = await Promise.all([
     base64ToImage(removeBgResult.resultBase64),
-    base64ToImage(bgResult.images[0]),
+    base64ToImage(bgBase64),
   ]);
 
   const width = 1024;

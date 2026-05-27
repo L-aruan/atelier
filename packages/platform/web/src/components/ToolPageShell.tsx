@@ -75,6 +75,7 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
         sellingPoints: string;
         platform?: 'taobao' | 'douyin' | 'xiaohongshu' | 'pdd' | 'general';
         style?: 'professional' | 'casual' | 'luxury' | 'youthful';
+        brandTone?: string;
         apiKey?: string;
       }) => {
         return generateCopyMutation.mutateAsync(params);

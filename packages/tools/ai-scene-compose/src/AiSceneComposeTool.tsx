@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Button } from '@atelier/ui-kit';
 import type { ToolProps } from '@atelier/types';
 import type { SceneComposeOptions } from './processor';
@@ -47,6 +47,11 @@ const SCENE_TEMPLATES = [
     label: '高端奢华',
     prompt: 'Luxury marble texture background, golden accents, elegant product display, premium feel',
   },
+  {
+    id: 'custom-bg',
+    label: '自定义背景',
+    prompt: '',
+  },
 ];
 
 export function AiSceneComposeTool({
@@ -63,27 +68,65 @@ export function AiSceneComposeTool({
   const [selectedScene, setSelectedScene] = useState(SCENE_TEMPLATES[0].id);
   const [customPrompt, setCustomPrompt] = useState('');
   const [useCustom, setUseCustom] = useState(false);
+  const [customBgFile, setCustomBgFile] = useState<File | null>(null);
+  const [customBgPreview, setCustomBgPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasKey = !!apiKey;
   const hasOutput = outputs.length > 0;
-  const canProcess = !!callApi && !!callGenerateImage && hasKey && files.length > 0;
+  const isCustomBg = selectedScene === 'custom-bg';
+  const canProcess = !!callApi && !!callGenerateImage && hasKey && files.length > 0
+    && (isCustomBg ? !!customBgFile : true);
 
   const currentPrompt = useCustom
     ? customPrompt
     : SCENE_TEMPLATES.find((s) => s.id === selectedScene)?.prompt || '';
 
+  const handleCustomBgUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCustomBgFile(file);
+    setCustomBgPreview(URL.createObjectURL(file));
+  }, []);
+
+  const handleRemoveCustomBg = useCallback(() => {
+    setCustomBgFile(null);
+    setCustomBgPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
+
+  const fileToBase64 = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        resolve(dataUrl.split(',')[1]);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
   const handleCompose = useCallback(async () => {
-    if (!callApi || !callGenerateImage || !currentPrompt) return;
+    if (!callApi || !callGenerateImage) return;
+    if (isCustomBg && !customBgFile) return;
+    if (!isCustomBg && !currentPrompt) return;
+
+    let customBackgroundBase64: string | undefined;
+    if (isCustomBg && customBgFile) {
+      customBackgroundBase64 = await fileToBase64(customBgFile);
+    }
 
     const options: SceneComposeOptions = {
-      scenePrompt: currentPrompt,
+      scenePrompt: isCustomBg ? '' : currentPrompt,
       apiKey: apiKey || undefined,
+      customBackgroundBase64,
       callRemoveBg: callApi,
       callGenerateImage,
     };
 
     await onProcess(files, options);
-  }, [callApi, callGenerateImage, currentPrompt, apiKey, files, onProcess]);
+  }, [callApi, callGenerateImage, isCustomBg, customBgFile, currentPrompt, apiKey, files, onProcess, fileToBase64]);
 
   return (
     <div className="space-y-6">
@@ -157,6 +200,43 @@ export function AiSceneComposeTool({
             className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
           />
         )}
+
+        {/* 自定义背景上传 */}
+        {isCustomBg && (
+          <div className="mt-3">
+            {customBgPreview ? (
+              <div className="relative">
+                <img
+                  src={customBgPreview}
+                  alt="自定义背景"
+                  className="w-full max-h-48 object-contain rounded-lg border border-gray-200"
+                />
+                <button
+                  onClick={handleRemoveCustomBg}
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                >
+                  ✕
+                </button>
+                <p className="text-xs text-gray-500 mt-1">{customBgFile?.name}</p>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors"
+              >
+                <p className="text-sm text-gray-600">点击上传背景图片</p>
+                <p className="text-xs text-gray-400 mt-1">支持 JPG、PNG、WebP</p>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleCustomBgUpload}
+              className="hidden"
+            />
+          </div>
+        )}
       </div>
 
       {/* 已上传文件预览 */}
@@ -191,14 +271,16 @@ export function AiSceneComposeTool({
       <div className="flex gap-3">
         <Button
           onClick={handleCompose}
-          disabled={processing || !canProcess || (!useCustom && !selectedScene) || (useCustom && !customPrompt.trim())}
+          disabled={processing || !canProcess || (!useCustom && !isCustomBg && !selectedScene) || (useCustom && !customPrompt.trim())}
           className="flex-1"
         >
           {processing
             ? '合成中...'
             : !canProcess
               ? '请先配置 API Key 并上传图片'
-              : 'AI 场景合成'}
+              : isCustomBg
+                ? '使用自定义背景合成'
+                : 'AI 场景合成'}
         </Button>
         {hasOutput && (
           <Button variant="secondary" onClick={() => onDownload(outputs)}>

@@ -11,6 +11,7 @@ interface AiCopyGenToolProps extends ToolProps {
     sellingPoints: string;
     platform?: string;
     style?: string;
+    brandTone?: string;
     apiKey?: string;
   }) => Promise<{ title: string; description: string; tags: string[] }>;
 }
@@ -30,6 +31,14 @@ const STYLES = [
   { label: '活力', value: 'youthful' as const },
 ];
 
+const CATEGORY_TEMPLATES = [
+  { label: '服装', productName: '连衣裙女款2024春夏', sellingPoints: '桑蚕丝面料、收腰显瘦、通勤百搭' },
+  { label: '食品', productName: '手工曲奇饼干礼盒', sellingPoints: '0添加防腐剂、黄油原味、送礼首选' },
+  { label: '数码', productName: '无线蓝牙耳机降噪版', sellingPoints: '40dB主动降噪、续航36小时、IPX5防水' },
+  { label: '家居', productName: '北欧简约台灯', sellingPoints: '三档调光、护眼LED、实木底座' },
+  { label: '美妆', productName: '持妆哑光口红', sellingPoints: '不沾杯、12色可选、滋润不拔干' },
+];
+
 export function AiCopyGenTool({
   onProcess,
   onDownload,
@@ -43,6 +52,7 @@ export function AiCopyGenTool({
   const [sellingPoints, setSellingPoints] = useState('');
   const [platform, setPlatform] = useState<'taobao' | 'douyin' | 'xiaohongshu' | 'pdd' | 'general'>('general');
   const [style, setStyle] = useState<'professional' | 'casual' | 'luxury' | 'youthful'>('professional');
+  const [brandTone, setBrandTone] = useState('');
   const [result, setResult] = useState<{ title: string; description: string; tags: string[] } | null>(null);
 
   const hasKey = !!apiKey;
@@ -57,6 +67,7 @@ export function AiCopyGenTool({
       sellingPoints: sellingPoints.trim(),
       platform,
       style,
+      brandTone: brandTone.trim() || undefined,
       apiKey: apiKey || undefined,
       callApi,
     };
@@ -133,6 +144,26 @@ export function AiCopyGenTool({
         </div>
       </div>
 
+      {/* 品类快捷模板 */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">快捷模板</label>
+        <div className="flex flex-wrap gap-2">
+          {CATEGORY_TEMPLATES.map((tpl) => (
+            <button
+              key={tpl.label}
+              onClick={() => {
+                setProductName(tpl.productName);
+                setSellingPoints(tpl.sellingPoints);
+              }}
+              className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+            >
+              {tpl.label}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-gray-400 mt-1">点击自动填充示例内容，降低使用门槛</p>
+      </div>
+
       {/* 平台和风格选择 */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -171,6 +202,21 @@ export function AiCopyGenTool({
             ))}
           </div>
         </div>
+      </div>
+
+      {/* 品牌语气（可选） */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          品牌语气 <span className="text-gray-400 font-normal">（可选）</span>
+        </label>
+        <input
+          type="text"
+          value={brandTone}
+          onChange={(e) => setBrandTone(e.target.value)}
+          placeholder="例如：年轻活泼、用网络流行语、亲切温暖、专业严谨"
+          className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        />
+        <p className="text-xs text-gray-400 mt-1">描述品牌调性，让生成的文案更符合品牌形象</p>
       </div>
 
       {/* 生成结果预览 */}

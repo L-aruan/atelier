@@ -106,6 +106,7 @@ export const aiRouter = router({
         sellingPoints: z.string().min(1, '请输入核心卖点').max(2000),
         platform: z.enum(['taobao', 'douyin', 'xiaohongshu', 'pdd', 'general']).default('general'),
         style: z.enum(['professional', 'casual', 'luxury', 'youthful']).default('professional'),
+        brandTone: z.string().max(200).optional(),
         apiKey: z.string().optional(),
       }),
     )
@@ -133,9 +134,10 @@ export const aiRouter = router({
         youthful: '年轻活力',
       };
 
+      const brandToneLine = input.brandTone ? `\n- 品牌语气：${input.brandTone}` : '';
       const systemPrompt = `你是一个专业的电商文案撰写专家。请根据以下要求生成文案：
 - 平台：${platformPrompts[input.platform]}
-- 风格：${stylePrompts[input.style]}
+- 风格：${stylePrompts[input.style]}${brandToneLine}
 - 输出格式要求：严格按 JSON 格式返回，包含 title（标题，30字内）、description（详情文案，200-500字）、tags（5个关键词标签数组）`;
 
       const response = await fetch('https://api.openai.com/v1/chat/completions', {

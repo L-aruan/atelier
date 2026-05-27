@@ -15,8 +15,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  pinnedTools  PinnedTool[]
-  recentTools  RecentTool[]
+  pinnedTools   PinnedTool[]
+  recentTools   RecentTool[]
+  workflowRuns  WorkflowRun[]
+  userWorkflows UserWorkflow[]
+  userApiKeys   UserApiKey[]
 }
 
 model PinnedTool {
@@ -38,4 +41,43 @@ model RecentTool {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
+}
+
+model WorkflowRun {
+  id            String   @id @default(cuid())
+  userId        String
+  workflowId    String
+  workflowName  String
+  totalFiles    Int
+  successCount  Int
+  failCount     Int
+  skippedCount  Int
+  duration      Int      // milliseconds
+  status        String   // 'completed' | 'failed' | 'partial'
+  stepDetails   String   // JSON string of StepResult[]
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserWorkflow {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  steps       String   // JSON string of WorkflowStep[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserApiKey {
+  id        String   @id @default(cuid())
+  userId    String
+  provider  String
+  key       String
+  label     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
 }

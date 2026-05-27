@@ -110,4 +110,112 @@ export const userRouter = router({
       }
       return { ok: true };
     }),
+
+  // User workflows
+  saveWorkflow: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().optional(),
+        name: z.string().min(1),
+        description: z.string().default(''),
+        steps: z.string(), // JSON string
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (input.id) {
+        const existing = await prisma.userWorkflow.findFirst({
+          where: { id: input.id, userId: ctx.userId },
+        });
+        if (!existing) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: '工作流不存在' });
+        }
+        const updated = await prisma.userWorkflow.update({
+          where: { id: input.id },
+          data: { name: input.name, description: input.description, steps: input.steps },
+        });
+        return { id: updated.id };
+      }
+      const created = await prisma.userWorkflow.create({
+        data: {
+          userId: ctx.userId,
+          name: input.name,
+          description: input.description,
+          steps: input.steps,
+        },
+      });
+      return { id: created.id };
+    }),
+
+  listWorkflows: protectedProcedure.query(async ({ ctx }) => {
+    const workflows = await prisma.userWorkflow.findMany({
+      where: { userId: ctx.userId },
+      orderBy: { updatedAt: 'desc' },
+    });
+    return workflows;
+  }),
+
+  deleteWorkflow: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await prisma.userWorkflow.findFirst({
+        where: { id: input.id, userId: ctx.userId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: '工作流不存在' });
+      }
+      await prisma.userWorkflow.delete({ where: { id: input.id } });
+      return { ok: true };
+    }),
+
+  // User API keys
+  saveApiKey: protectedProcedure
+    .input(
+      z.object({
+        provider: z.string().min(1),
+        key: z.string().min(1),
+        label: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existing = await prisma.userApiKey.findUnique({
+        where: { userId_provider: { userId: ctx.userId, provider: input.provider } },
+      });
+      if (existing) {
+        const updated = await prisma.userApiKey.update({
+          where: { id: existing.id },
+          data: { key: input.key, label: input.label },
+        });
+        return { id: updated.id };
+      }
+      const created = await prisma.userApiKey.create({
+        data: {
+          userId: ctx.userId,
+          provider: input.provider,
+          key: input.key,
+          label: input.label,
+        },
+      });
+      return { id: created.id };
+    }),
+
+  listApiKeys: protectedProcedure.query(async ({ ctx }) => {
+    const keys = await prisma.userApiKey.findMany({
+      where: { userId: ctx.userId },
+      select: { id: true, provider: true, label: true, createdAt: true },
+    });
+    return keys;
+  }),
+
+  deleteApiKey: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const existing = await prisma.userApiKey.findFirst({
+        where: { id: input.id, userId: ctx.userId },
+      });
+      if (!existing) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'API Key 不存在' });
+      }
+      await prisma.userApiKey.delete({ where: { id: input.id } });
+      return { ok: true };
+    }),
 });
