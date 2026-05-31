@@ -12,6 +12,7 @@ export const AI_PROVIDERS = [
   { id: 'remove-bg', name: 'remove.bg', description: 'AI 抠图' },
   { id: 'openrouter', name: 'OpenRouter', description: '统一 LLM 网关（300+ 模型）' },
   { id: 'openai', name: 'OpenAI', description: 'GPT / DALL-E' },
+  { id: 'packy', name: 'PackyAPI', description: 'GPT-Image-2 生图' },
   { id: 'stability-ai', name: 'Stability AI', description: 'Stable Diffusion' },
 ] as const;
 
@@ -59,6 +60,7 @@ export function getKeyForProvider(provider: string): string | null {
 // 环境变量 fallback 映射（仅限 NEXT_PUBLIC_ 前缀的客户端可用）
 const PLATFORM_KEY_ENV_MAP: Record<string, string> = {
   'openai': 'NEXT_PUBLIC_OPENAI_API_KEY',
+  'packy': 'NEXT_PUBLIC_PACKY_API_KEY',
   'remove-bg': 'NEXT_PUBLIC_REMOVE_BG_KEY',
 };
 

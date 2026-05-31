@@ -1,0 +1,25 @@
+{
+  "id": "ai-ecommerce-detail-gen",
+  "name": "AI 电商详情页生成",
+  "category": "ai",
+  "description": "上传真实产品图，一键生成电商详情页组图、卖点标注和长图素材",
+  "icon": "🛒",
+  "version": "1.0.0",
+  "runtime": {
+    "client": false,
+    "server": true,
+    "offline": false,
+    "downloadable": false
+  },
+  "input": {
+    "accept": ["image/jpeg", "image/png", "image/webp"],
+    "maxSize": "20MB",
+    "batch": false
+  },
+  "output": {
+    "formats": ["png", "zip"]
+  },
+  "component": "./src/AiEcommerceDetailGenTool.tsx",
+  "customLayout": true,
+  "aiProvider": "openai"
+}

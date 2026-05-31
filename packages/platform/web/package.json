@@ -12,6 +12,7 @@
   "dependencies": {
     "@atelier/engine-image": "workspace:*",
     "@atelier/tool-ai-copy-gen": "workspace:*",
+    "@atelier/tool-ai-ecommerce-detail-gen": "workspace:*",
     "@atelier/tool-ai-image-gen": "workspace:*",
     "@atelier/tool-ai-remove-bg": "workspace:*",
     "@atelier/tool-ai-scene-compose": "workspace:*",

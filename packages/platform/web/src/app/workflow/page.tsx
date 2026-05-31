@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@atelier/ui-kit';
 import { EmptyState } from '@/components/EmptyState';
 import { ListSkeleton } from '@/components/LoadingSkeleton';
+import { RecentExecutions } from '@/components/RecentExecutions';
 import { WORKFLOW_TEMPLATES, createFromTemplate } from '@/lib/workflow-templates';
 import { listWorkflows, deleteWorkflow, saveWorkflow } from '@/lib/workflow-store';
 import type { Workflow } from '@/lib/workflow-types';
@@ -60,7 +61,7 @@ export default function WorkflowListPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">工作流</h1>
-          <p className="text-gray-500 text-sm mt-1">组合多个工具，批量处理媒体文件</p>
+          <p className="text-gray-500 text-sm mt-1">组合多个工具，完成批量处理和场景化任务</p>
         </div>
         <Link href="/workflow/new">
           <Button type="button">+ 新建工作流</Button>
@@ -68,7 +69,8 @@ export default function WorkflowListPage() {
       </div>
 
       <section>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">预设模板</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1">推荐工作流</h2>
+        <p className="text-sm text-gray-500 mb-4">面向核心场景的多步骤模板，可直接使用或继续编辑。</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {WORKFLOW_TEMPLATES.map((tpl) => (
             <div
@@ -85,6 +87,8 @@ export default function WorkflowListPage() {
           ))}
         </div>
       </section>
+
+      <RecentExecutions />
 
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">我的工作流</h2>

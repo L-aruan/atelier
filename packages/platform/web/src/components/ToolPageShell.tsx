@@ -40,6 +40,7 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
   const removeBgMutation = trpc.ai.removeBg.useMutation();
   const generateImageMutation = trpc.ai.generateImage.useMutation();
   const generateCopyMutation = trpc.ai.generateCopy.useMutation();
+  const generateEcommerceDetailSetMutation = trpc.ai.generateEcommerceDetailSet.useMutation();
   const formatBrushMutation = trpc.doc.formatBrush.useMutation();
   const addToast = useToastStore((s) => s.addToast);
 
@@ -322,7 +323,9 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
             })}
             {...(isAiTool && {
               apiKey: aiApiKey,
+              getApiKeyForProvider: (provider: string) => getEffectiveKey(provider).key,
               callApi: aiCallApi,
+              callGenerateDetailSet: generateEcommerceDetailSetMutation.mutateAsync,
               onNavigateToKeys: () => router.push('/settings/keys'),
             })}
           />
@@ -383,7 +386,9 @@ export function ToolPageShell({ toolId }: ToolPageShellProps) {
               outputs={outputs}
               {...(isAiTool && {
                 apiKey: aiApiKey,
+                getApiKeyForProvider: (provider: string) => getEffectiveKey(provider).key,
                 callApi: aiCallApi,
+                callGenerateDetailSet: generateEcommerceDetailSetMutation.mutateAsync,
                 onNavigateToKeys: () => router.push('/settings/keys'),
               })}
               {...(tool?.manifest.id === 'ai-scene-compose' && {

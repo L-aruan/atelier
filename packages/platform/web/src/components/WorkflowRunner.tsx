@@ -95,6 +95,23 @@ export function WorkflowRunner({ workflow, files: initialFiles, onComplete, onBa
 
   const start = useCallback(async () => {
     if (files.length === 0 || workflow.steps.length === 0) return;
+    const loginRequiredStep = workflow.steps.find((step) => {
+      const tool = toolRegistry.get(step.toolId);
+      return tool ? !tool.manifest.runtime.offline || tool.manifest.runtime.server : false;
+    });
+    if (!user && loginRequiredStep) {
+      const toolName = toolRegistry.get(loginRequiredStep.toolId)?.manifest.name ?? loginRequiredStep.toolId;
+      setError(`${toolName} 是在线工具，请先登录后再执行。`);
+      setOutputs(null);
+      return;
+    }
+    const interactiveStep = workflow.steps.find((step) => toolRegistry.get(step.toolId)?.manifest.customLayout);
+    if (interactiveStep) {
+      const toolName = toolRegistry.get(interactiveStep.toolId)?.manifest.name ?? interactiveStep.toolId;
+      setError(`${toolName} 需要在独立工具页面填写产品信息后生成，不能作为普通工作流步骤执行。`);
+      setOutputs(null);
+      return;
+    }
     setRunning(true);
     setError(null);
     setOutputs(null);

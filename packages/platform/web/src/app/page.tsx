@@ -3,8 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { FileDropHero } from '@/components/FileDropHero';
 import { PinnedTools } from '@/components/PinnedTools';
 import { RecentTools } from '@/components/RecentTools';
-import { RecentExecutions } from '@/components/RecentExecutions';
-import { P0QuickStarts } from '@/components/P0QuickStarts';
+import { PopularTools } from '@/components/PopularTools';
 import { CategoryTabs } from '@/components/CategoryTabs';
 import { ToolGrid } from '@/components/ToolGrid';
 import { toolRegistry } from '@/lib/tool-registry';
@@ -32,10 +31,9 @@ export default function HomePage() {
   return (
     <div className="space-y-8">
       <FileDropHero />
-      <P0QuickStarts />
+      <PopularTools />
       <PinnedTools />
       <RecentTools />
-      <RecentExecutions />
       <section className="space-y-4">
         <CategoryTabs selected={selectedCategory} onChange={setSelectedCategory} />
         <ToolGrid
