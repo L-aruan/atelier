@@ -417,11 +417,11 @@ async function generateMimoDetailPlan(params: {
   pageCount: number;
   images: string[];
 }): Promise<DetailPlan> {
-  const apiKey = process.env.MIMO_API_KEY || '';
+  const apiKey = process.env.MIMO_TEXT_API_KEY || '';
   if (!apiKey) {
     throw new TRPCError({
       code: 'BAD_REQUEST',
-      message: 'Packy 模式需要先配置服务端 MIMO_API_KEY，用于生成详情页脚本和图生图 prompt。',
+      message: 'Packy 模式需要先配置服务端 MIMO_TEXT_API_KEY，用于生成详情页脚本和图生图 prompt。',
     });
   }
 
@@ -435,6 +435,8 @@ async function generateMimoDetailPlan(params: {
     imageCount: params.images.length,
     platform: params.platform,
     style: params.style,
+    apiKeyPrefix: apiKey.slice(0, 8) + '...',
+    apiKeyLength: apiKey.length,
   });
   const pageTypePlan =
     params.pageCount <= 1
@@ -519,9 +521,15 @@ JSON schema：
     let errorMessage = `HTTP ${response.status}`;
     try {
       const errorJson = await response.json();
+      aiLog('mimo.plan.error_response', {
+        status: response.status,
+        errorJson,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
       errorMessage = errorJson.error?.message || errorJson.message || errorMessage;
     } catch {
       const text = await response.text().catch(() => '');
+      aiLog('mimo.plan.error_text', { status: response.status, text: text.slice(0, 500) });
       if (text) errorMessage = text.slice(0, 400);
     }
     throw new TRPCError({
