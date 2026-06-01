@@ -1,14 +1,15 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Button } from '@atelier/ui-kit';
 import type { FileOutput, ToolProps } from '@atelier/types';
-import JSZip from 'jszip';
-import { renderEcommerceDetailOutputs } from './processor';
+import { renderEcommerceDetailOutput } from './processor';
 import type {
+  DetailPagePlan,
   EcommerceDetailRequest,
   EcommerceDetailResult,
   EcommerceLanguage,
   EcommercePlatform,
   EcommerceProvider,
+  EcommerceReferenceImage,
 } from './types';
 
 interface AiEcommerceDetailGenToolProps extends ToolProps {
@@ -33,18 +34,57 @@ const PROVIDER_OPTIONS: Array<{ label: string; value: EcommerceProvider }> = [
   { label: '阿里云', value: 'aliyun' },
 ];
 
-const fileToDataUrl = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+const maxReferenceImages = 3;
+const maxReferenceImageBytes = 20 * 1024 * 1024;
+
+function getAuthToken() {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('atelier:token');
+}
+
+type GeneratedPage = DetailPagePlan & {
+  imageUrl: string;
+};
+
+function assetUrl(assetId: string) {
+  const token = getAuthToken();
+  return token
+    ? `/api/ai-assets/${assetId}?token=${encodeURIComponent(token)}`
+    : `/api/ai-assets/${assetId}`;
+}
+
+function jobZipUrl(jobId: string) {
+  const token = getAuthToken();
+  return token
+    ? `/api/ai-generation-jobs/${jobId}/zip?token=${encodeURIComponent(token)}`
+    : `/api/ai-generation-jobs/${jobId}/zip`;
+}
+
+function downloadJobZip(jobId: string) {
+  window.location.href = jobZipUrl(jobId);
+}
+
+async function uploadReferenceImages(files: File[]): Promise<EcommerceReferenceImage[]> {
+  const token = getAuthToken();
+  const form = new FormData();
+  files.forEach((file) => form.append('files', file));
+
+  const response = await fetch('/api/ai-assets/upload', {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body: form,
   });
 
-function revokeOutputs(outputs: FileOutput[]) {
-  outputs.forEach((output) => {
-    if (output.url.startsWith('blob:')) URL.revokeObjectURL(output.url);
-  });
+  const json = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(json?.error || `参考图上传失败: HTTP ${response.status}`);
+  }
+  return json.assets || [];
+}
+
+function revokeOutputLater(output: FileOutput) {
+  if (!output.url.startsWith('blob:')) return;
+  window.setTimeout(() => URL.revokeObjectURL(output.url), 30_000);
 }
 
 export function AiEcommerceDetailGenTool({
@@ -66,24 +106,27 @@ export function AiEcommerceDetailGenTool({
   const [pageCount, setPageCount] = useState(1);
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [localOutputs, setLocalOutputs] = useState<FileOutput[]>([]);
+  const [generatedPages, setGeneratedPages] = useState<GeneratedPage[]>([]);
   const [summary, setSummary] = useState('');
+  const [jobId, setJobId] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [downloadingPageId, setDownloadingPageId] = useState('');
 
   const providerApiKey = getApiKeyForProvider?.(provider) || apiKey || null;
   const hasKey = !!providerApiKey;
   const canGenerate =
     !!callGenerateDetailSet && productName.trim().length > 0 && files.length > 0;
 
-  const generatedZip = useMemo(
-    () => localOutputs.find((output) => output.type === 'application/zip'),
-    [localOutputs],
-  );
-
   const handleFiles = useCallback((selectedFiles: FileList | null) => {
-    const nextFiles = Array.from(selectedFiles || []).slice(0, 3);
+    const nextFiles = Array.from(selectedFiles || []).slice(0, maxReferenceImages);
+    const oversized = nextFiles.find((file) => file.size > maxReferenceImageBytes);
+    if (oversized) {
+      setError(`${oversized.name} 超过 20MB 限制`);
+      return;
+    }
+
     previews.forEach((preview) => URL.revokeObjectURL(preview));
     setFiles(nextFiles);
     setPreviews(nextFiles.map((file) => URL.createObjectURL(file)));
@@ -103,12 +146,13 @@ export function AiEcommerceDetailGenTool({
     setIsGenerating(true);
     setError('');
     setStatus('正在读取参考图...');
-    revokeOutputs(localOutputs);
-    setLocalOutputs([]);
+    setGeneratedPages([]);
     setSummary('');
+    setJobId('');
+    setDownloadingPageId('');
 
     try {
-      const images = await Promise.all(files.map(fileToDataUrl));
+      const referenceImages = await uploadReferenceImages(files);
       setStatus('正在分析产品并生成详情图脚本...');
       const result = await callGenerateDetailSet({
         productName: productName.trim(),
@@ -120,33 +164,22 @@ export function AiEcommerceDetailGenTool({
         pageCount,
         provider,
         apiKey: providerApiKey || undefined,
-        images,
+        referenceImages,
       });
 
       setSummary(result.productSummary);
-      setStatus('正在渲染中文标题、卖点和标注...');
-      const rendered = await renderEcommerceDetailOutputs({
-        productName: productName.trim(),
-        pages: result.pages,
-        width: 1024,
-        height: 1536,
-      });
+      setJobId(result.jobId || '');
+      const pages = result.pages
+        .map((page) => ({
+          ...page,
+          imageUrl: page.imageAssetId ? assetUrl(page.imageAssetId) : page.imageUrl,
+        }))
+        .filter((page): page is GeneratedPage => !!page.imageUrl);
 
-      const zipOutput = await (async () => {
-        const zip = new JSZip();
-        rendered.forEach((output) => zip.file(output.name, output.blob));
-        const blob = await zip.generateAsync({ type: 'blob' });
-        return {
-          blob,
-          name: `${productName.trim()}_电商详情页.zip`,
-          type: 'application/zip',
-          size: blob.size,
-          url: URL.createObjectURL(blob),
-        };
-      })();
-
-      setLocalOutputs([...rendered, zipOutput]);
-      setStatus(`已生成 ${rendered.length} 张详情图`);
+      setGeneratedPages(pages);
+      setStatus(
+        `已生成 ${pages.length} 张详情图，预览使用服务端素材，单张下载时再渲染成品图`,
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
       setStatus('');
@@ -159,7 +192,6 @@ export function AiEcommerceDetailGenTool({
     files,
     imageQuality,
     language,
-    localOutputs,
     pageCount,
     platform,
     productName,
@@ -168,6 +200,27 @@ export function AiEcommerceDetailGenTool({
     sellingPoints,
     style,
   ]);
+
+  const handleDownloadPage = useCallback(async (page: GeneratedPage, index: number) => {
+    setDownloadingPageId(page.id);
+    setError('');
+
+    try {
+      const output = await renderEcommerceDetailOutput({
+        productName: productName.trim(),
+        page,
+        index,
+        width: 1024,
+        height: 1536,
+      });
+      onDownload([output]);
+      revokeOutputLater(output);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setDownloadingPageId('');
+    }
+  }, [onDownload, productName]);
 
   return (
     <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
@@ -362,7 +415,7 @@ export function AiEcommerceDetailGenTool({
           </div>
         )}
 
-        {localOutputs.length === 0 ? (
+        {generatedPages.length === 0 ? (
           <div className="flex h-full min-h-[420px] items-center justify-center text-sm text-gray-400">
             生成结果会显示在这里
           </div>
@@ -370,33 +423,39 @@ export function AiEcommerceDetailGenTool({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-gray-800">
-                已生成 {localOutputs.filter((output) => output.type === 'image/png').length} 张
+                已生成 {generatedPages.length} 张
               </p>
-              {generatedZip && (
-                <Button onClick={() => onDownload([generatedZip])}>下载全部 ZIP</Button>
+              {jobId && (
+                <Button onClick={() => downloadJobZip(jobId)}>下载原图 ZIP</Button>
               )}
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {localOutputs
-                .filter((output) => output.type === 'image/png')
-                .map((output) => (
-                  <div
-                    key={output.url}
-                    className="overflow-hidden rounded-lg border border-gray-200 bg-white"
-                  >
-                    <img src={output.url} alt={output.name} className="w-full object-cover" />
-                    <div className="flex items-center justify-between px-3 py-2">
-                      <span className="truncate text-xs text-gray-500">{output.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => onDownload([output])}
-                        className="text-xs font-medium text-blue-600 hover:text-blue-700"
-                      >
-                        下载
-                      </button>
-                    </div>
+              {generatedPages.map((page, index) => (
+                <div
+                  key={page.id || page.imageUrl}
+                  className="overflow-hidden rounded-lg border border-gray-200 bg-white"
+                >
+                  <img
+                    src={page.imageUrl}
+                    alt={page.title}
+                    className="w-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="truncate text-xs text-gray-500">
+                      {String(index + 1).padStart(2, '0')}_{page.type}.png
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDownloadPage(page, index)}
+                      disabled={downloadingPageId === page.id}
+                      className="text-xs font-medium text-blue-600 hover:text-blue-700 disabled:text-gray-400"
+                    >
+                      {downloadingPageId === page.id ? '渲染中...' : '下载成品'}
+                    </button>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
         )}

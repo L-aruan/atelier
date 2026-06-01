@@ -17,12 +17,24 @@ const TYPE_LABELS: Record<string, string> = {
   usage: '使用示意',
 };
 
+function isDirectImageSource(src: string) {
+  return (
+    src.startsWith('data:') ||
+    src.startsWith('blob:') ||
+    src.startsWith('/') ||
+    src.startsWith('./') ||
+    src.startsWith('../') ||
+    src.startsWith('http://') ||
+    src.startsWith('https://')
+  );
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
     img.onerror = reject;
-    img.src = src.startsWith('data:') ? src : `data:image/png;base64,${src}`;
+    img.src = isDirectImageSource(src) ? src : `data:image/png;base64,${src}`;
   });
 }
 
@@ -186,7 +198,10 @@ export async function renderDetailPage(
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas 初始化失败');
 
-  const img = await loadImage(page.imageBase64);
+  const imageSource = page.imageUrl || page.imageBase64;
+  if (!imageSource) throw new Error('缺少详情页图片素材');
+
+  const img = await loadImage(imageSource);
   drawCoverImage(ctx, img, options.width, options.height);
   drawGradientOverlay(ctx, options.width, options.height);
 
@@ -198,6 +213,8 @@ export async function renderDetailPage(
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
+      canvas.width = 0;
+      canvas.height = 0;
       if (blob) resolve(blob);
       else reject(new Error('图片导出失败'));
     }, 'image/png');

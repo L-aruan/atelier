@@ -30,12 +30,22 @@ export interface DetailPagePlan {
   productInstruction: string;
   bullets: string[];
   hotspots: DetailHotspot[];
-  imageBase64: string;
+  imageBase64?: string;
+  imageAssetId?: string;
+  imageUrl?: string;
 }
 
 export interface EcommerceDetailResult {
   productSummary: string;
   pages: DetailPagePlan[];
+  jobId?: string;
+}
+
+export interface EcommerceReferenceImage {
+  storageKey: string;
+  mimeType: string;
+  fileName?: string;
+  size?: number;
 }
 
 export interface EcommerceDetailRequest {
@@ -48,5 +58,6 @@ export interface EcommerceDetailRequest {
   pageCount: number;
   provider: EcommerceProvider;
   apiKey?: string;
-  images: string[];
+  images?: string[];
+  referenceImages?: EcommerceReferenceImage[];
 }

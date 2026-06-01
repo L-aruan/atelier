@@ -15,48 +15,50 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  pinnedTools   PinnedTool[]
-  recentTools   RecentTool[]
-  workflowRuns  WorkflowRun[]
-  userWorkflows UserWorkflow[]
-  userApiKeys   UserApiKey[]
+  pinnedTools      PinnedTool[]
+  recentTools      RecentTool[]
+  workflowRuns     WorkflowRun[]
+  userWorkflows    UserWorkflow[]
+  userApiKeys      UserApiKey[]
+  aiGenerationJobs AiGenerationJob[]
+  aiProviderUsages AiProviderUsage[]
 }
 
 model PinnedTool {
-  id       String @id @default(cuid())
-  userId   String
-  toolId   String
-  order    Int    @default(0)
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  toolId String
+  order  Int    @default(0)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
 }
 
 model RecentTool {
-  id       String   @id @default(cuid())
-  userId   String
-  toolId   String
-  usedAt   DateTime @default(now())
-  count    Int      @default(1)
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String   @id @default(cuid())
+  userId String
+  toolId String
+  usedAt DateTime @default(now())
+  count  Int      @default(1)
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, toolId])
 }
 
 model WorkflowRun {
-  id            String   @id @default(cuid())
-  userId        String
-  workflowId    String
-  workflowName  String
-  totalFiles    Int
-  successCount  Int
-  failCount     Int
-  skippedCount  Int
-  duration      Int      // milliseconds
-  status        String   // 'completed' | 'failed' | 'partial'
-  stepDetails   String   // JSON string of StepResult[]
-  createdAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  userId       String
+  workflowId   String
+  workflowName String
+  totalFiles   Int
+  successCount Int
+  failCount    Int
+  skippedCount Int
+  duration     Int // milliseconds
+  status       String // 'completed' | 'failed' | 'partial'
+  stepDetails  String // JSON string of StepResult[]
+  createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserWorkflow {
@@ -64,7 +66,7 @@ model UserWorkflow {
   userId      String
   name        String
   description String
-  steps       String   // JSON string of WorkflowStep[]
+  steps       String // JSON string of WorkflowStep[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -80,4 +82,75 @@ model UserApiKey {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, provider])
+}
+
+model AiGenerationJob {
+  id              String              @id @default(cuid())
+  userId          String
+  toolId          String
+  requestType     String
+  provider        String
+  model           String?
+  productName     String?
+  platform        String?
+  style           String?
+  status          String // 'running' | 'completed' | 'failed' | 'partial'
+  pageCount       Int                 @default(0)
+  inputImageCount Int                 @default(0)
+  outputCount     Int                 @default(0)
+  duration        Int?
+  requestPayload  String // JSON string without secrets or image base64
+  resultSummary   String?
+  errorMessage    String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assets          AiGenerationAsset[]
+  providerUsages  AiProviderUsage[]
+
+  @@index([userId, createdAt])
+  @@index([toolId, status])
+  @@index([provider, createdAt])
+}
+
+model AiGenerationAsset {
+  id         String          @id @default(cuid())
+  jobId      String
+  assetType  String // 'image' | 'zip' | 'metadata'
+  pageId     String?
+  pageType   String?
+  fileName   String?
+  mimeType   String?
+  size       Int?
+  storageKey String?
+  prompt     String?
+  metadata   String? // JSON string without binary payload
+  createdAt  DateTime        @default(now())
+  job        AiGenerationJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId])
+  @@index([assetType, pageType])
+}
+
+model AiProviderUsage {
+  id               String           @id @default(cuid())
+  userId           String
+  jobId            String?
+  provider         String
+  model            String?
+  operation        String
+  status           String // 'success' | 'failed'
+  promptChars      Int              @default(0)
+  inputImageCount  Int              @default(0)
+  outputImageCount Int              @default(0)
+  duration         Int?
+  errorMessage     String?
+  metadata         String? // JSON string without secrets
+  createdAt        DateTime         @default(now())
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job              AiGenerationJob? @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([jobId])
+  @@index([provider, operation])
 }

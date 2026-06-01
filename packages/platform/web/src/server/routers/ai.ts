@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { router, protectedProcedure } from '../trpc';
+import { prisma } from '../db';
+import { readAiAssetBuffer, writeAiAssetBuffer } from '../ai-assets/storage';
 
 type DetailPageType =
   | 'hero'
@@ -34,6 +36,15 @@ interface DetailPlan {
   pages: DetailPageDraft[];
 }
 
+interface ReferenceImageAsset {
+  storageKey: string;
+  mimeType: string;
+  fileName?: string;
+  size?: number;
+}
+
+type ReferenceImageInput = string | ReferenceImageAsset;
+
 const detailPageTypes = [
   'hero',
   'value',
@@ -47,6 +58,53 @@ const detailPageTypes = [
 
 function aiLog(event: string, details: Record<string, unknown>) {
   console.info(`[ai-ecommerce-detail-gen] ${event}`, details);
+}
+
+function modelForProvider(provider: string, operation: 'plan' | 'image') {
+  if (provider === 'packy') {
+    return operation === 'plan'
+      ? process.env.MIMO_TEXT_MODEL || 'mimo-v2.5'
+      : process.env.PACKY_IMAGE_MODEL || 'gpt-image-2';
+  }
+  return operation === 'plan'
+    ? process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini'
+    : process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1';
+}
+
+function safeStringify(value: unknown) {
+  return JSON.stringify(value, (_key, item) => {
+    if (typeof item === 'string' && item.length > 1000) return `${item.slice(0, 1000)}...`;
+    return item;
+  });
+}
+
+function sanitizeDetailRequest(input: {
+  productName: string;
+  sellingPoints?: string;
+  platform: string;
+  language: string;
+  style: string;
+  imageQuality: string;
+  pageCount: number;
+  provider: string;
+  images?: string[];
+  referenceImages?: ReferenceImageAsset[];
+}) {
+  const referenceImages = getReferenceImages(input);
+  return {
+    productName: input.productName,
+    sellingPoints: input.sellingPoints || '',
+    platform: input.platform,
+    language: input.language,
+    style: input.style,
+    imageQuality: input.imageQuality,
+    pageCount: input.pageCount,
+    provider: input.provider,
+    imageCount: referenceImages.length,
+    imageBytesApprox: referenceImages.map((image) =>
+      typeof image === 'string' ? Math.round(image.length * 0.75) : image.size || 0,
+    ),
+  };
 }
 
 function errorSummary(error: unknown) {
@@ -104,6 +162,40 @@ function imageInputToBlob(image: string) {
   const parsed = parseImageInput(image);
   const buffer = Buffer.from(parsed.base64, 'base64');
   return new Blob([buffer], { type: parsed.mimeType });
+}
+
+async function referenceImageToBlob(image: ReferenceImageInput) {
+  if (typeof image === 'string') return imageInputToBlob(image);
+  const buffer = await readAiAssetBuffer(image.storageKey);
+  return new Blob([buffer], { type: image.mimeType });
+}
+
+async function referenceImageToDataUrl(image: ReferenceImageInput) {
+  if (typeof image === 'string') return imageInputToDataUrl(image);
+  const buffer = await readAiAssetBuffer(image.storageKey);
+  return `data:${image.mimeType};base64,${buffer.toString('base64')}`;
+}
+
+function getReferenceImages(input: {
+  images?: string[];
+  referenceImages?: ReferenceImageAsset[];
+}): ReferenceImageInput[] {
+  if (input.referenceImages?.length) return input.referenceImages;
+  return input.images || [];
+}
+
+function assertReferenceImageOwnership(userId: string, images: ReferenceImageInput[]) {
+  const userUploadPrefix = `uploads/${userId}/`;
+  const invalidImage = images.find(
+    (image) => typeof image !== 'string' && !image.storageKey.startsWith(userUploadPrefix),
+  );
+
+  if (invalidImage) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: '参考图无权访问',
+    });
+  }
 }
 
 function pageTypeRichnessInstruction(type: DetailPageType) {
@@ -227,6 +319,8 @@ function generateFallbackDetailPlan(params: {
     params.pageCount,
   );
 }
+
+void generateFallbackDetailPlan;
 
 async function generateOpenAiDetailPlan(params: {
   apiKey: string;
@@ -478,7 +572,7 @@ JSON schema：
 async function callOpenAiImageGeneration(params: {
   apiKey: string;
   prompt: string;
-  referenceImage?: string;
+  referenceImage?: ReferenceImageInput;
 }): Promise<string> {
   if (params.referenceImage) {
     const form = new FormData();
@@ -486,7 +580,7 @@ async function callOpenAiImageGeneration(params: {
     form.append('prompt', params.prompt);
     form.append('size', '1024x1536');
     form.append('quality', 'high');
-    form.append('image', imageInputToBlob(params.referenceImage), 'reference.png');
+    form.append('image', await referenceImageToBlob(params.referenceImage), 'reference.png');
 
     const editResponse = await fetch('https://api.openai.com/v1/images/edits', {
       method: 'POST',
@@ -591,7 +685,7 @@ async function callPackyImageGeneration(params: {
   apiKey: string;
   prompt: string;
   quality: 'low' | 'medium' | 'high' | 'auto';
-  referenceImage?: string;
+  referenceImage?: ReferenceImageInput;
 }): Promise<string> {
   const startedAt = Date.now();
   aiLog('packy.image.start', {
@@ -604,7 +698,7 @@ async function callPackyImageGeneration(params: {
     const form = new FormData();
     form.append('model', process.env.PACKY_IMAGE_MODEL || 'gpt-image-2');
     form.append('prompt', params.prompt);
-    form.append('image', imageInputToBlob(params.referenceImage), 'reference.png');
+    form.append('image', await referenceImageToBlob(params.referenceImage), 'reference.png');
     form.append('size', '1024x1536');
     form.append('quality', params.quality);
     form.append('output_format', 'png');
@@ -697,7 +791,8 @@ async function callPackyImageGeneration(params: {
 export const aiRouter = router({
   removeBg: protectedProcedure
     .input(
-      z.object({
+      z
+        .object({
         imageBase64: z.string(),
         apiKey: z.string().optional(),
       }),
@@ -902,18 +997,65 @@ export const aiRouter = router({
         pageCount: z.number().int().min(1).max(12).default(1),
         provider: z.enum(['packy', 'openai', 'volcengine', 'aliyun']).default('packy'),
         apiKey: z.string().optional(),
-        images: z.array(z.string().min(1)).min(1).max(3),
-      }),
+        images: z.array(z.string().min(1)).max(3).optional(),
+        referenceImages: z
+          .array(
+            z.object({
+              storageKey: z.string().min(1),
+              mimeType: z.string().refine((value) => value.startsWith('image/')),
+              fileName: z.string().optional(),
+              size: z.number().int().positive().optional(),
+            }),
+          )
+          .max(3)
+          .optional(),
+      })
+        .refine((value) => getReferenceImages(value).length > 0, {
+          message: '璇蜂笂浼犺嚦灏?1 寮犲弬鑰冨浘',
+          path: ['referenceImages'],
+        }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       const startedAt = Date.now();
+      const referenceImages = getReferenceImages(input);
+      assertReferenceImageOwnership(ctx.userId, referenceImages);
+      const primaryReferenceImage = referenceImages[0];
       aiLog('request.start', {
         provider: input.provider,
         pageCount: input.pageCount,
         imageQuality: input.imageQuality,
-        imageCount: input.images.length,
+        imageCount: referenceImages.length,
         platform: input.platform,
       });
+      const job = await prisma.aiGenerationJob.create({
+        data: {
+          userId: ctx.userId,
+          toolId: 'ai-ecommerce-detail-gen',
+          requestType: 'ecommerce-detail',
+          provider: input.provider,
+          model: modelForProvider(input.provider, 'image'),
+          productName: input.productName,
+          platform: input.platform,
+          style: input.style,
+          status: 'running',
+          pageCount: input.pageCount,
+          inputImageCount: referenceImages.length,
+          requestPayload: safeStringify(sanitizeDetailRequest(input)),
+        },
+      });
+      const jobId = job.id;
+      let activeUsage: {
+        provider: string;
+        model: string;
+        operation: string;
+        promptChars: number;
+        inputImageCount: number;
+        outputImageCount: number;
+        startedAt: number;
+        metadata?: Record<string, unknown>;
+      } | null = null;
+
+      try {
       if (input.provider !== 'openai' && input.provider !== 'packy') {
         throw new TRPCError({
           code: 'BAD_REQUEST',
@@ -932,6 +1074,20 @@ export const aiRouter = router({
         });
       }
 
+      const planStartedAt = Date.now();
+      activeUsage = {
+        provider: input.provider === 'packy' ? 'mimo' : 'openai',
+        model: modelForProvider(input.provider, 'plan'),
+        operation: 'detail-plan',
+        promptChars: input.productName.length + (input.sellingPoints?.length ?? 0),
+        inputImageCount: input.provider === 'openai' ? referenceImages.length : 0,
+        outputImageCount: 0,
+        startedAt: planStartedAt,
+      };
+      const planningImages =
+        input.provider === 'openai'
+          ? await Promise.all(referenceImages.slice(0, 3).map(referenceImageToDataUrl))
+          : [];
       const plan =
         input.provider === 'packy'
           ? await generateMimoDetailPlan({
@@ -941,7 +1097,7 @@ export const aiRouter = router({
             language: input.language,
             style: input.style,
             pageCount: input.pageCount,
-            images: input.images,
+            images: [],
           })
           : await generateOpenAiDetailPlan({
             apiKey,
@@ -951,8 +1107,27 @@ export const aiRouter = router({
             language: input.language,
             style: input.style,
             pageCount: input.pageCount,
-            images: input.images,
+            images: planningImages,
           });
+      await prisma.aiProviderUsage.create({
+        data: {
+          userId: ctx.userId,
+          jobId,
+          provider: input.provider === 'packy' ? 'mimo' : 'openai',
+          model: modelForProvider(input.provider, 'plan'),
+          operation: 'detail-plan',
+          status: 'success',
+          promptChars: input.productName.length + (input.sellingPoints?.length ?? 0),
+          inputImageCount: input.provider === 'openai' ? referenceImages.length : 0,
+          outputImageCount: 0,
+          duration: Date.now() - planStartedAt,
+          metadata: safeStringify({
+            pageCount: plan.pages.length,
+            productSummary: plan.productSummary,
+          }),
+        },
+      });
+      activeUsage = null;
 
       const pages = [];
       for (const page of plan.pages) {
@@ -974,27 +1149,99 @@ export const aiRouter = router({
           'Vertical 2:3 composition, commercial product photography, sharp focus, realistic lighting.',
         ].join('\n');
 
+        const imageStartedAt = Date.now();
+        activeUsage = {
+          provider: input.provider,
+          model: modelForProvider(input.provider, 'image'),
+          operation: 'detail-image',
+          promptChars: prompt.length,
+          inputImageCount: primaryReferenceImage ? 1 : 0,
+          outputImageCount: 0,
+          startedAt: imageStartedAt,
+          metadata: { pageId: page.id, pageType: page.type },
+        };
         const imageBase64 =
           input.provider === 'packy'
             ? await callPackyImageGeneration({
               apiKey,
               prompt,
               quality: input.imageQuality,
-              referenceImage: input.images[0],
+              referenceImage: primaryReferenceImage,
             })
             : await callOpenAiImageGeneration({
               apiKey,
               prompt,
-              referenceImage: input.images[0],
+              referenceImage: primaryReferenceImage,
             });
+        const imageBuffer = Buffer.from(imageBase64, 'base64');
+        await prisma.aiProviderUsage.create({
+          data: {
+            userId: ctx.userId,
+            jobId,
+            provider: input.provider,
+            model: modelForProvider(input.provider, 'image'),
+            operation: 'detail-image',
+            status: 'success',
+            promptChars: prompt.length,
+            inputImageCount: primaryReferenceImage ? 1 : 0,
+            outputImageCount: 1,
+            duration: Date.now() - imageStartedAt,
+            metadata: safeStringify({
+              pageId: page.id,
+              pageType: page.type,
+              imageBytesApprox: imageBuffer.byteLength,
+            }),
+          },
+        });
+        activeUsage = null;
 
-        pages.push({ ...page, imageBase64 });
+        const fileName = `${page.id || page.type}.png`;
+        const stored = await writeAiAssetBuffer({
+          prefix: `jobs/${jobId}`,
+          buffer: imageBuffer,
+          mimeType: 'image/png',
+          fileName,
+        });
+        const asset = await prisma.aiGenerationAsset.create({
+          data: {
+            jobId,
+            assetType: 'image',
+            pageId: page.id,
+            pageType: page.type,
+            fileName,
+            mimeType: 'image/png',
+            size: stored.size,
+            storageKey: stored.storageKey,
+            prompt,
+            metadata: safeStringify({
+              title: page.title,
+              subtitle: page.subtitle,
+              bullets: page.bullets,
+              hotspots: page.hotspots,
+            }),
+          },
+        });
+        pages.push({
+          ...page,
+          imageAssetId: asset.id,
+          imageUrl: `/api/ai-assets/${asset.id}`,
+        });
         aiLog('page.image.success', {
           provider: input.provider,
           pageId: page.id,
           pageType: page.type,
         });
       }
+
+      await prisma.aiGenerationJob.update({
+        where: { id: jobId },
+        data: {
+          status: 'completed',
+          duration: Date.now() - startedAt,
+          outputCount: pages.length,
+          resultSummary: plan.productSummary,
+        },
+      });
 
       aiLog('request.success', {
         provider: input.provider,
@@ -1004,6 +1251,36 @@ export const aiRouter = router({
       return {
         productSummary: plan.productSummary,
         pages,
+        jobId,
       };
+      } catch (e) {
+        if (activeUsage) {
+          await prisma.aiProviderUsage.create({
+            data: {
+              userId: ctx.userId,
+              jobId,
+              provider: activeUsage.provider,
+              model: activeUsage.model,
+              operation: activeUsage.operation,
+              status: 'failed',
+              promptChars: activeUsage.promptChars,
+              inputImageCount: activeUsage.inputImageCount,
+              outputImageCount: activeUsage.outputImageCount,
+              duration: Date.now() - activeUsage.startedAt,
+              errorMessage: e instanceof Error ? e.message : String(e),
+              metadata: activeUsage.metadata ? safeStringify(activeUsage.metadata) : undefined,
+            },
+          });
+        }
+        await prisma.aiGenerationJob.update({
+          where: { id: jobId },
+          data: {
+            status: 'failed',
+            duration: Date.now() - startedAt,
+            errorMessage: e instanceof Error ? e.message : String(e),
+          },
+        });
+        throw e;
+      }
     }),
 });

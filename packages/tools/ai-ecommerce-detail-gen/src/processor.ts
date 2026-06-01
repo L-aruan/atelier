@@ -1,5 +1,4 @@
 import type { FileInput, FileOutput, ToolOptions } from '@atelier/types';
-import JSZip from 'jszip';
 import { renderDetailPage } from './renderer';
 import type { DetailPagePlan } from './types';
 
@@ -8,6 +7,35 @@ export interface EcommerceDetailGenOptions extends ToolOptions {
   pages: DetailPagePlan[];
   width?: number;
   height?: number;
+}
+
+export async function renderEcommerceDetailOutput(params: {
+  productName: string;
+  page: DetailPagePlan;
+  index?: number;
+  width?: number;
+  height?: number;
+}): Promise<FileOutput> {
+  const page = {
+    ...params.page,
+    bullets: Array.isArray(params.page.bullets) ? params.page.bullets : [],
+    hotspots: Array.isArray(params.page.hotspots) ? params.page.hotspots : [],
+  };
+  const blob = await renderDetailPage(page, {
+    width: params.width || 1024,
+    height: params.height || 1536,
+    productName: params.productName,
+  });
+  const prefix =
+    params.index === undefined ? '' : `${String(params.index + 1).padStart(2, '0')}_`;
+
+  return {
+    blob,
+    name: `${prefix}${page.type}.png`,
+    type: 'image/png',
+    size: blob.size,
+    url: URL.createObjectURL(blob),
+  };
 }
 
 export async function renderEcommerceDetailOutputs(
@@ -22,24 +50,15 @@ export async function renderEcommerceDetailOutputs(
   const outputs: FileOutput[] = [];
 
   for (let i = 0; i < options.pages.length; i++) {
-    const page = {
-      ...options.pages[i],
-      bullets: Array.isArray(options.pages[i].bullets) ? options.pages[i].bullets : [],
-      hotspots: Array.isArray(options.pages[i].hotspots) ? options.pages[i].hotspots : [],
-    };
-    const blob = await renderDetailPage(page, {
-      width,
-      height,
-      productName: options.productName,
-    });
-    const name = `${String(i + 1).padStart(2, '0')}_${page.type}.png`;
-    outputs.push({
-      blob,
-      name,
-      type: 'image/png',
-      size: blob.size,
-      url: URL.createObjectURL(blob),
-    });
+    outputs.push(
+      await renderEcommerceDetailOutput({
+        productName: options.productName,
+        page: options.pages[i],
+        index: i,
+        width,
+        height,
+      }),
+    );
   }
 
   return outputs;
@@ -50,19 +69,23 @@ export async function processEcommerceDetailGen(
   options: ToolOptions,
 ): Promise<FileOutput> {
   const opts = options as EcommerceDetailGenOptions;
-  const images = await renderEcommerceDetailOutputs(opts);
-  const zip = new JSZip();
+  if (!Array.isArray(opts.pages) || opts.pages.length === 0) {
+    throw new Error('缺少详情页生成结果，请从「AI 电商详情页生成」工具页面填写产品信息后生成。');
+  }
 
-  images.forEach((image) => {
-    zip.file(image.name, image.blob);
+  if (opts.pages.length > 1) {
+    throw new Error('多页详情图请使用工具页面生成结果中的服务端 ZIP 下载，避免浏览器内存占用过高。');
+  }
+
+  const output = await renderEcommerceDetailOutput({
+    productName: opts.productName,
+    page: opts.pages[0],
+    width: opts.width || 1024,
+    height: opts.height || 1536,
   });
 
-  const zipBlob = await zip.generateAsync({ type: 'blob' });
   return {
-    blob: zipBlob,
-    name: `${opts.productName || 'ecommerce-detail'}_detail_pages.zip`,
-    type: 'application/zip',
-    size: zipBlob.size,
-    url: URL.createObjectURL(zipBlob),
+    ...output,
+    name: `${opts.productName || 'ecommerce-detail'}_${opts.pages[0].type}.png`,
   };
 }

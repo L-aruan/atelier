@@ -10,7 +10,11 @@ export const aiEcommerceDetailGenTool: AtelierTool = {
 };
 
 export { AiEcommerceDetailGenTool } from './AiEcommerceDetailGenTool';
-export { processEcommerceDetailGen, renderEcommerceDetailOutputs } from './processor';
+export {
+  processEcommerceDetailGen,
+  renderEcommerceDetailOutput,
+  renderEcommerceDetailOutputs,
+} from './processor';
 export type { EcommerceDetailGenOptions } from './processor';
 export type {
   DetailPagePlan,
